@@ -1,102 +1,122 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Cuentas Pendientes</title>
 
 <style>
 
+*{
+box-sizing:border-box;
+}
+
 body{
-font-family: Arial;
+font-family:Arial;
 margin:0;
-padding:15px;
 background:#f2f2f2;
+}
+
+.app{
+width:100%;
+max-width:100%;
+padding:15px;
 }
 
 h1{
 text-align:center;
-}
-
-.container{
-max-width:500px;
-margin:auto;
-background:white;
-padding:15px;
-border-radius:10px;
-box-shadow:0px 0px 10px rgba(0,0,0,0.2);
+margin-bottom:15px;
 }
 
 input,button{
 width:100%;
-padding:10px;
+padding:14px;
 margin-top:8px;
-font-size:16px;
+font-size:18px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
 button{
 background:#2e7d32;
 color:white;
 border:none;
-border-radius:5px;
 }
 
-button:hover{
+button:active{
 background:#1b5e20;
+}
+
+.tabla-container{
+overflow-x:auto;
+margin-top:15px;
 }
 
 table{
 width:100%;
-margin-top:15px;
 border-collapse:collapse;
+background:white;
 }
 
 th,td{
-border:1px solid #ccc;
-padding:8px;
-text-align:center;
+border:1px solid #ddd;
+padding:10px;
 font-size:14px;
+text-align:center;
+}
+
+th{
+background:#eeeeee;
 }
 
 .eliminar{
 background:red;
+padding:6px;
+font-size:14px;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="app">
 
 <h1>Cuentas Pendientes</h1>
 
 <input type="date" id="fecha">
 <input type="text" id="nombre" placeholder="Nombre">
-<input type="text" id="codigo" placeholder="Código (2 dígitos)">
+<input type="text" id="codigo" placeholder="Código">
 <input type="number" id="deuda" placeholder="Deuda">
 
 <button onclick="registrar()">Registrar Persona</button>
 
 <hr>
 
-<input type="text" id="codigoAbono" placeholder="Código persona">
-<input type="number" id="abono" placeholder="Abono">
+<input type="text" id="codigoAbono" placeholder="Código para abono">
+<input type="number" id="abono" placeholder="Valor del abono">
 
 <button onclick="abonar()">Registrar Abono</button>
+
+<div class="tabla-container">
 
 <table>
 
 <thead>
+
 <tr>
 <th>Fecha</th>
-<th>Nombre</th>
+<th>Persona</th>
 <th>Deuda</th>
 <th>Abono</th>
 <th>Saldo</th>
 <th>Días</th>
-<th>Eliminar</th>
+<th></th>
 </tr>
+
 </thead>
 
 <tbody id="tabla"></tbody>
@@ -105,12 +125,14 @@ background:red;
 
 </div>
 
+</div>
+
 <script>
 
 let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
 function guardar(){
-localStorage.setItem("personas", JSON.stringify(personas));
+localStorage.setItem("personas",JSON.stringify(personas));
 }
 
 function formato(n){
@@ -122,9 +144,9 @@ function dias(fecha){
 let inicio = new Date(fecha);
 let hoy = new Date();
 
-let diferencia = hoy - inicio;
+let diff = hoy - inicio;
 
-return Math.floor(diferencia/(1000*60*60*24));
+return Math.floor(diff/(1000*60*60*24));
 
 }
 
@@ -136,20 +158,16 @@ let codigo = document.getElementById("codigo").value;
 let deuda = Number(document.getElementById("deuda").value);
 
 if(!fecha || !nombre || !codigo || !deuda){
-
-alert("Complete los datos");
+alert("Completa los datos");
 return;
-
 }
 
 personas.push({
-
 fecha,
 nombre,
 codigo,
 deuda,
 abono:0
-
 });
 
 guardar();
@@ -160,29 +178,27 @@ mostrar();
 function abonar(){
 
 let codigo = document.getElementById("codigoAbono").value;
-let abono = Number(document.getElementById("abono").value);
+let valor = Number(document.getElementById("abono").value);
 
-let persona = personas.find(p => p.codigo == codigo);
+let persona = personas.find(p=>p.codigo==codigo);
 
 if(!persona){
-
 alert("Código no encontrado");
 return;
-
 }
 
-persona.abono += abono;
+persona.abono += valor;
 
 guardar();
 mostrar();
 
 }
 
-function eliminar(index){
+function eliminar(i){
 
-if(confirm("Eliminar esta persona?")){
+if(confirm("Eliminar persona?")){
 
-personas.splice(index,1);
+personas.splice(i,1);
 
 guardar();
 mostrar();
@@ -202,25 +218,17 @@ personas.forEach((p,i)=>{
 let saldo = p.deuda - p.abono;
 
 tabla.innerHTML += `
-
 <tr>
 
 <td>${p.fecha}</td>
-
 <td>${p.nombre} (${p.codigo})</td>
-
 <td>$${formato(p.deuda)}</td>
-
 <td>$${formato(p.abono)}</td>
-
 <td>$${formato(saldo)}</td>
-
 <td>${dias(p.fecha)}</td>
-
 <td><button class="eliminar" onclick="eliminar(${i})">X</button></td>
 
 </tr>
-
 `;
 
 });
