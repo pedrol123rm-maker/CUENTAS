@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cuentas Pendientes</title>
 
 <style>
 
 body{
-font-family:Arial;
-background:#f2f4f8;
-padding:20px;
+font-family: Arial;
+margin:0;
+padding:15px;
+background:#f2f2f2;
 }
 
 h1{
@@ -18,85 +19,83 @@ text-align:center;
 }
 
 .container{
-background:white;
-padding:20px;
-border-radius:10px;
-box-shadow:0 0 10px rgba(0,0,0,0.1);
-max-width:1000px;
+max-width:500px;
 margin:auto;
+background:white;
+padding:15px;
+border-radius:10px;
+box-shadow:0px 0px 10px rgba(0,0,0,0.2);
 }
 
-input{
-padding:8px;
-margin:5px;
+input,button{
+width:100%;
+padding:10px;
+margin-top:8px;
+font-size:16px;
 }
 
 button{
-padding:8px 15px;
-background:#2e86de;
+background:#2e7d32;
 color:white;
 border:none;
 border-radius:5px;
-cursor:pointer;
 }
 
 button:hover{
-background:#1b4f72;
+background:#1b5e20;
 }
 
 table{
 width:100%;
-margin-top:20px;
+margin-top:15px;
 border-collapse:collapse;
 }
 
 th,td{
 border:1px solid #ccc;
-padding:10px;
+padding:8px;
 text-align:center;
+font-size:14px;
 }
 
-th{
-background:#2e86de;
-color:white;
+.eliminar{
+background:red;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<h1>Cuentas Pendientes</h1>
-
 <div class="container">
 
-<h3>Registrar Persona</h3>
+<h1>Cuentas Pendientes</h1>
 
 <input type="date" id="fecha">
 <input type="text" id="nombre" placeholder="Nombre">
 <input type="text" id="codigo" placeholder="Código (2 dígitos)">
-<input type="number" id="deuda" placeholder="Valor prestado">
+<input type="number" id="deuda" placeholder="Deuda">
 
-<button onclick="agregar()">Registrar</button>
+<button onclick="registrar()">Registrar Persona</button>
 
-<h3>Registrar Abono</h3>
+<hr>
 
 <input type="text" id="codigoAbono" placeholder="Código persona">
-<input type="number" id="abono" placeholder="Valor abono">
+<input type="number" id="abono" placeholder="Abono">
 
-<button onclick="abonar()">Agregar Abono</button>
+<button onclick="abonar()">Registrar Abono</button>
 
 <table>
 
 <thead>
 <tr>
 <th>Fecha</th>
-<th>Persona</th>
+<th>Nombre</th>
 <th>Deuda</th>
-<th>Abonado</th>
+<th>Abono</th>
 <th>Saldo</th>
-<th>Días desde préstamo</th>
+<th>Días</th>
+<th>Eliminar</th>
 </tr>
 </thead>
 
@@ -104,38 +103,53 @@ color:white;
 
 </table>
 
-<br>
-
-<button onclick="exportar()">Guardar respaldo</button>
-<input type="file" onchange="importar(event)">
-
 </div>
 
 <script>
 
-let datos = JSON.parse(localStorage.getItem("cuentas")) || [];
+let personas = JSON.parse(localStorage.getItem("personas")) || [];
 
 function guardar(){
-localStorage.setItem("cuentas",JSON.stringify(datos));
+localStorage.setItem("personas", JSON.stringify(personas));
 }
 
-function formato(numero){
-return numero.toLocaleString("es-CO");
+function formato(n){
+return n.toLocaleString("es-CO");
 }
 
-function agregar(){
+function dias(fecha){
 
-let fecha=document.getElementById("fecha").value;
-let nombre=document.getElementById("nombre").value;
-let codigo=document.getElementById("codigo").value;
-let deuda=parseFloat(document.getElementById("deuda").value);
+let inicio = new Date(fecha);
+let hoy = new Date();
 
-datos.push({
-fecha:fecha,
-nombre:nombre,
-codigo:codigo,
-deuda:deuda,
-abonado:0
+let diferencia = hoy - inicio;
+
+return Math.floor(diferencia/(1000*60*60*24));
+
+}
+
+function registrar(){
+
+let fecha = document.getElementById("fecha").value;
+let nombre = document.getElementById("nombre").value;
+let codigo = document.getElementById("codigo").value;
+let deuda = Number(document.getElementById("deuda").value);
+
+if(!fecha || !nombre || !codigo || !deuda){
+
+alert("Complete los datos");
+return;
+
+}
+
+personas.push({
+
+fecha,
+nombre,
+codigo,
+deuda,
+abono:0
+
 });
 
 guardar();
@@ -145,97 +159,71 @@ mostrar();
 
 function abonar(){
 
-let codigo=document.getElementById("codigoAbono").value;
-let abono=parseFloat(document.getElementById("abono").value);
+let codigo = document.getElementById("codigoAbono").value;
+let abono = Number(document.getElementById("abono").value);
 
-datos.forEach(p=>{
+let persona = personas.find(p => p.codigo == codigo);
 
-if(p.codigo==codigo){
-p.abonado+=abono;
+if(!persona){
+
+alert("Código no encontrado");
+return;
+
 }
 
-});
+persona.abono += abono;
 
 guardar();
 mostrar();
 
 }
 
-function diasPrestamo(fecha){
+function eliminar(index){
 
-let inicio=new Date(fecha);
-let hoy=new Date();
+if(confirm("Eliminar esta persona?")){
 
-let diferencia=(hoy-inicio)/(1000*60*60*24);
+personas.splice(index,1);
 
-return Math.floor(diferencia);
+guardar();
+mostrar();
+
+}
 
 }
 
 function mostrar(){
 
-let tabla=document.getElementById("tabla");
+let tabla = document.getElementById("tabla");
 
 tabla.innerHTML="";
 
-datos.forEach(p=>{
+personas.forEach((p,i)=>{
 
-let saldo=p.deuda-p.abonado;
+let saldo = p.deuda - p.abono;
 
-tabla.innerHTML+=`
+tabla.innerHTML += `
 
 <tr>
 
 <td>${p.fecha}</td>
+
 <td>${p.nombre} (${p.codigo})</td>
+
 <td>$${formato(p.deuda)}</td>
-<td>$${formato(p.abonado)}</td>
+
+<td>$${formato(p.abono)}</td>
+
 <td>$${formato(saldo)}</td>
-<td>${diasPrestamo(p.fecha)}</td>
+
+<td>${dias(p.fecha)}</td>
+
+<td><button class="eliminar" onclick="eliminar(${i})">X</button></td>
 
 </tr>
 
 `;
 
 });
-
-}
-
-function exportar(){
-
-let data=JSON.stringify(datos);
-
-let blob=new Blob([data],{type:"application/json"});
-
-let url=URL.createObjectURL(blob);
-
-let a=document.createElement("a");
-
-a.href=url;
-
-a.download="cuentas.json";
-
-a.click();
-
-}
-
-function importar(event){
-
-let archivo=event.target.files[0];
-
-let lector=new FileReader();
-
-lector.onload=function(e){
-
-datos=JSON.parse(e.target.result);
-
-guardar();
-
-mostrar();
-
-}
-
-lector.readAsText(archivo);
 
 }
 
