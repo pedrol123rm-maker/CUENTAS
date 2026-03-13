@@ -12,658 +12,760 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --azul:#5ba8d4;
-  --azul2:#7ec8e3;
-  --azul3:#3a9abc;
-  --fondo:#f5fbff;
-  --fondo2:#eaf5fb;
-  --card:#ffffff;
-  --borde:#b0d8f0;
-  --borde2:#deeef8;
-  --txt:#1a3a50;
-  --txt2:#90c0d8;
-  --negro:#1a1a1a;
-  --rojo:#cc2020;
-  --verde:#1e8a45;
+  --azul:#5ba8d4;--azul2:#7ec8e3;--azul3:#3a9abc;
+  --navy:#1a3a50;--navy2:#3a6a90;
+  --fondo:#f5fbff;--fondo2:#eaf5fb;
+  --card:#ffffff;--borde:#b0d8f0;--borde2:#deeef8;
+  --txt:#1a3a50;--txt2:#90c0d8;
+  --negro:#1a1a1a;--rojo:#cc2020;--verde:#1e8a45;
   --shadow:0 2px 12px rgba(91,168,212,0.10);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--fondo);
-  color:var(--txt);
-  min-height:100vh;
-  padding-bottom:50px;
-  -webkit-font-smoothing:antialiased;
-}
+html,body{height:100%;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--fondo);color:var(--txt);display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;}
 
-/* ── HEADER ── */
-.hdr{
-  background:linear-gradient(135deg,#5ba8d4,#7ec8e3);
-  padding:env(safe-area-inset-top, 16px) 16px 14px;
-  padding-top:max(env(safe-area-inset-top),16px);
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:200;
-  box-shadow:0 2px 12px rgba(91,168,212,0.25);
-}
-.hdr-titulo{font-size:20px;font-weight:900;color:#fff;letter-spacing:-0.5px;}
-.hdr-sub{font-size:24px;font-weight:900;color:rgba(255,255,255,0.9);margin-top:0;}
-.hdr-badge{
-  font-size:10px;font-weight:700;
-  background:rgba(255,255,255,0.22);
-  color:#fff;padding:5px 11px;
-  border-radius:20px;border:1px solid rgba(255,255,255,0.35);
-  white-space:nowrap;
-}
+.hdr{background:linear-gradient(135deg,var(--azul),var(--azul2));padding:max(env(safe-area-inset-top),14px) 16px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(91,168,212,0.3);}
+.hdr-titulo{font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.3px;}
+.hdr-right{display:flex;align-items:center;gap:8px;}
+.hdr-num{font-size:22px;font-weight:900;color:#fff;}
+.hdr-sync{font-size:10px;font-weight:700;background:rgba(255,255,255,0.22);color:#fff;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);}
 
-/* ── MAIN ── */
-.main{padding:14px;display:flex;flex-direction:column;gap:12px;max-width:600px;margin:0 auto;}
+.page{display:none;flex:1;flex-direction:column;animation:fadeIn 0.2s ease;}
+.page.activa{display:flex;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.scroll{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
+.card{background:var(--card);border-radius:16px;border:0.5px solid var(--borde);padding:14px;box-shadow:var(--shadow);}
 
-/* ── CARD ── */
-.card{
-  background:var(--card);
-  border-radius:18px;
-  border:0.5px solid var(--borde);
-  padding:16px;
-  box-shadow:var(--shadow);
-}
-
-/* ── COLAPSABLE ── */
-.colapsa-header{
-  display:flex;align-items:center;justify-content:space-between;
-  cursor:pointer;user-select:none;-webkit-user-select:none;
-  min-height:44px;
-}
-.colapsa-header:active{opacity:0.7;}
-.colapsa-titulo{
-  font-size:14px;font-weight:800;color:var(--txt);
-  display:flex;align-items:center;gap:8px;
-}
-.ctag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
-.ctag-azul{background:rgba(91,168,212,0.15);color:var(--azul3);}
-.ctag-verde{background:#e8f8ee;color:#1a7a3a;}
-.colapsa-flecha{
-  width:32px;height:32px;
-  background:var(--fondo2);
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:16px;color:var(--azul3);
-  border:1px solid var(--borde);
-  transition:transform 0.3s ease,background 0.2s;
-  flex-shrink:0;
-}
-.colapsa-flecha.abierto{transform:rotate(180deg);background:var(--azul3);color:#fff;}
-.colapsa-cuerpo{
-  overflow:hidden;max-height:0;
-  transition:max-height 0.4s ease,opacity 0.3s ease,margin-top 0.3s ease;
-  opacity:0;margin-top:0;
-}
-.colapsa-cuerpo.abierto{max-height:800px;opacity:1;margin-top:14px;}
-
-/* ── BUSCADOR ── */
-.busqueda{
-  width:100%;
-  background:var(--fondo2);
-  border:1.5px solid var(--borde);
-  border-radius:14px;
-  padding:14px 16px;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:16px;color:var(--txt);
-  outline:none;
-  transition:border-color 0.2s,box-shadow 0.2s;
-}
+.busqueda{width:100%;background:var(--card);border:1.5px solid var(--borde);border-radius:13px;padding:13px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;color:var(--txt);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow);}
 .busqueda:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(91,168,212,0.15);}
 .busqueda::placeholder{color:var(--txt2);}
 
-/* ── RESUMEN ── */
-.resumen-total{
-  background:linear-gradient(135deg,#5ba8d4,#7ec8e3);
-  border-radius:14px;padding:14px;color:#fff;
-  position:relative;overflow:hidden;
-}
-.resumen-total::after{
-  content:'';position:absolute;top:-30px;right:-30px;
-  width:100px;height:100px;
-  background:radial-gradient(circle,rgba(255,255,255,0.12) 0%,transparent 70%);
-  border-radius:50%;pointer-events:none;
-}
+.deudor-item{background:var(--card);border-radius:14px;border:0.5px solid var(--borde);border-left:4px solid var(--borde);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform 0.1s;box-shadow:var(--shadow);animation:fadeIn 0.2s ease both;}
+.deudor-item:active{transform:scale(0.98);}
+.urg-ok{border-left-color:#7ec8e3;}.urg-med{border-left-color:#f0c040;}.urg-alta{border-left-color:#e08030;}.urg-crit{border-left-color:#cc2020;}
+.avatar{width:42px;height:42px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;border:2px solid var(--borde);}
+.item-info{flex:1;min-width:0;}
+.item-nombre{font-size:14px;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.item-meta{font-size:10px;color:var(--txt2);margin-top:2px;}
+.item-saldo{font-size:12px;font-weight:800;color:var(--verde);margin-top:2px;}
+.badge-dias{font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.b-ok{background:#eaf5fb;color:var(--azul3);}.b-med{background:#fef8e0;color:#c08000;}.b-alta{background:#fff3e0;color:#c05000;}.b-crit{background:#fce8e8;color:#b02020;}
+
+.perfil-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(26,58,80,0.25);}
+.perfil-hdr-top{padding:16px 16px 28px;display:flex;align-items:flex-start;gap:12px;}
+.perfil-avatar{width:52px;height:52px;border-radius:50%;background:var(--azul);border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0;}
+.perfil-info{flex:1;}
+.perfil-nombre{font-size:17px;font-weight:900;color:#fff;}
+.perfil-fecha{font-size:10px;color:rgba(255,255,255,0.55);margin-top:4px;}
+.perfil-pill{font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;background:#fce8e8;color:#b02020;flex-shrink:0;}
+
+.metricas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:-18px 12px 0;position:relative;z-index:2;}
+.met{background:var(--card);border-radius:12px;border:0.5px solid var(--borde);padding:10px 6px;text-align:center;box-shadow:0 4px 16px rgba(91,168,212,0.15);}
+.met-val{font-size:12px;font-weight:900;display:block;}
+.met-lbl{font-size:8px;color:var(--txt2);display:block;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;}
+
+.prog-wrap{margin-top:18px;}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:5px;}
+.prog-lbl{font-size:10px;font-weight:700;color:var(--txt2);}
+.prog-pct{font-size:10px;font-weight:900;color:var(--azul);}
+.prog-track{background:var(--fondo2);border-radius:99px;height:6px;overflow:hidden;border:0.5px solid var(--borde);}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--azul),var(--azul2));transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
+
+.hist-titulo{font-size:12px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+.abono-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--fondo2);border-radius:11px;margin-bottom:6px;border:0.5px solid var(--borde);}
+.abo-izq{flex:1;}
+.abo-num{font-size:11px;font-weight:700;color:var(--txt);}
+.abo-fecha{font-size:9px;color:var(--txt2);}
+.abo-der{display:flex;align-items:center;gap:8px;}
+.abo-val{font-size:13px;font-weight:800;color:var(--verde);}
+.btn-edit-ico{background:none;border:none;font-size:14px;cursor:pointer;padding:4px;border-radius:6px;transition:background 0.15s;}
+.btn-edit-ico:active{background:var(--borde);}
+.sin-abonos{text-align:center;padding:16px;color:var(--txt2);font-size:12px;background:var(--fondo2);border-radius:11px;border:0.5px dashed var(--borde);}
+
+.form-abono-perfil{background:#f0faf5;border-radius:14px;border:1px solid #b8e8cc;padding:14px;}
+.form-abono-titulo{font-size:12px;font-weight:800;color:#1a7a3a;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
+.campo{margin-bottom:10px;}
+.campo label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;}
+.campo input{width:100%;background:var(--card);border:1.5px solid var(--borde);border-radius:11px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;color:var(--txt);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.campo input:focus{border-color:var(--verde);box-shadow:0 0 0 3px rgba(30,138,69,0.12);}
+.campo input::placeholder{color:var(--borde);}
+.campo input.azul:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(91,168,212,0.15);}
+
+.btn{width:100%;padding:14px;border-radius:13px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.12s;min-height:50px;}
+.btn:active{transform:scale(0.97);}
+.btn-azul{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;box-shadow:0 4px 14px rgba(91,168,212,0.4);}
+.btn-verde{background:linear-gradient(135deg,var(--verde),#2ecc71);color:#fff;box-shadow:0 4px 14px rgba(30,138,69,0.3);}
+.btn-naranja{background:linear-gradient(135deg,#e08030,#f0a050);color:#fff;box-shadow:0 4px 14px rgba(224,128,48,0.35);}
+
+.colapsa-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;min-height:44px;}
+.colapsa-titulo{font-size:14px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px;}
+.ctag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.ctag-azul{background:rgba(91,168,212,0.15);color:var(--azul3);}
+.ctag-verde{background:#e8f8ee;color:#1a7a3a;}
+.colapsa-flecha{width:30px;height:30px;background:var(--fondo2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--azul3);border:1px solid var(--borde);transition:transform 0.3s,background 0.2s;flex-shrink:0;}
+.colapsa-flecha.abierto{transform:rotate(180deg);background:var(--azul3);color:#fff;}
+.colapsa-cuerpo{overflow:hidden;max-height:0;transition:max-height 0.4s ease,opacity 0.3s,margin-top 0.3s;opacity:0;margin-top:0;}
+.colapsa-cuerpo.abierto{max-height:800px;opacity:1;margin-top:12px;}
+
+.resumen-total{background:linear-gradient(135deg,var(--azul),var(--azul2));border-radius:13px;padding:14px;color:#fff;position:relative;overflow:hidden;}
+.resumen-total::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,255,255,0.12),transparent 70%);border-radius:50%;pointer-events:none;}
 .res-label{font-size:9px;font-weight:700;opacity:0.65;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.res-grande{font-size:28px;font-weight:900;letter-spacing:-1px;line-height:1;}
+.res-grande{font-size:26px;font-weight:900;letter-spacing:-1px;line-height:1;}
 .res-sub{font-size:10px;opacity:0.6;margin-top:2px;margin-bottom:12px;}
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.res-item{background:rgba(255,255,255,0.15);border-radius:11px;padding:9px 8px;text-align:center;border:1px solid rgba(255,255,255,0.18);}
-.res-item-val{font-size:13px;font-weight:800;display:block;color:#fff;}
-.res-item-lbl{font-size:9px;opacity:0.6;display:block;margin-top:1px;}
-.barra-wrap{background:rgba(255,255,255,0.18);border-radius:99px;height:6px;overflow:hidden;margin-top:12px;}
-.barra-fill{height:100%;border-radius:99px;background:rgba(255,255,255,0.7);transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
-.barra-labels{display:flex;justify-content:space-between;font-size:9px;margin-top:4px;opacity:0.65;}
+.res-item{background:rgba(255,255,255,0.15);border-radius:10px;padding:8px;text-align:center;border:1px solid rgba(255,255,255,0.18);}
+.res-item-val{font-size:12px;font-weight:800;display:block;color:#fff;}
+.res-item-lbl{font-size:8px;opacity:0.6;display:block;margin-top:1px;}
+.barra-wrap{background:rgba(255,255,255,0.18);border-radius:99px;height:5px;overflow:hidden;margin-top:10px;}
+.barra-fill{height:100%;border-radius:99px;background:rgba(255,255,255,0.75);transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
+.barra-labels{display:flex;justify-content:space-between;font-size:8px;margin-top:3px;opacity:0.65;}
 .barra-labels span:last-child{font-weight:800;opacity:1;}
 
-/* ── CAMPOS ── */
-.campo{margin-bottom:10px;}
-.campo label{font-size:11px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:5px;}
-.campo input{
-  width:100%;background:var(--fondo2);
-  border:1.5px solid var(--borde);border-radius:12px;
-  padding:14px;font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:16px;color:var(--txt);outline:none;
-  transition:border-color 0.2s,box-shadow 0.2s;
-}
-.campo input:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(91,168,212,0.15);}
-.campo input::placeholder{color:var(--borde);}
-
-/* ── BOTONES ── */
-.btn{
-  width:100%;padding:15px;border-radius:14px;border:none;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:16px;font-weight:800;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:transform 0.12s,box-shadow 0.12s;
-  min-height:52px;
-}
-.btn:active{transform:scale(0.97);}
-.btn-azul{background:linear-gradient(135deg,#5ba8d4,#7ec8e3);color:#fff;box-shadow:0 4px 14px rgba(91,168,212,0.4);}
-.btn-verde{background:linear-gradient(135deg,#1e8a45,#2ecc71);color:#fff;box-shadow:0 4px 14px rgba(30,138,69,0.3);}
-
-/* ── DIVIDER ── */
-.divider{display:flex;align-items:center;gap:8px;color:var(--txt2);font-size:11px;font-weight:600;margin:2px 0;}
+.divider{display:flex;align-items:center;gap:8px;color:var(--txt2);font-size:10px;font-weight:600;}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--borde2);}
 
-/* ── TARJETA DEUDOR ── */
-.deudor-card{
-  background:var(--card);border-radius:16px;
-  border:0.5px solid var(--borde);overflow:hidden;
-  animation:fadeUp 0.25s ease both;
-  box-shadow:var(--shadow);border-left:4px solid var(--borde);
-  margin-bottom:10px;
-}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.urg-ok  {border-left-color:#7ec8e3;}
-.urg-med {border-left-color:#f0c040;}
-.urg-alta{border-left-color:#e08030;}
-.urg-crit{border-left-color:#cc2020;}
+.btn-eliminar-perfil{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;border-radius:12px;border:1px solid #f0c8c8;background:#fce8e8;color:#b03030;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform 0.12s;}
+.btn-eliminar-perfil:active{transform:scale(0.97);}
 
-.d-top{padding:12px 14px 8px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;}
-.d-nombre{font-size:15px;font-weight:800;color:var(--txt);}
-.d-meta{font-size:10px;color:var(--txt2);margin-top:2px;}
-.badge-dias{font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
-.b-ok  {background:#eaf5fb;color:var(--azul3);}
-.b-med {background:#fef8e0;color:#c08000;}
-.b-alta{background:#fff3e0;color:#c05000;}
-.b-crit{background:#fce8e8;color:#b02020;}
+/* EDIT INLINE */
+.edit-deuda-wrap{background:#fff8e0;border:1px solid #f0d080;border-radius:12px;padding:12px;margin-bottom:8px;}
+.edit-titulo{font-size:11px;font-weight:800;color:#c08000;margin-bottom:8px;}
 
-.d-montos{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:0.5px solid var(--borde2);border-bottom:0.5px solid var(--borde2);}
-.d-monto{text-align:center;padding:9px 4px;}
-.d-monto:not(:last-child){border-right:0.5px solid var(--borde2);}
-.d-monto-val{font-size:13px;font-weight:800;display:block;}
-.d-monto-lbl{font-size:9px;color:var(--txt2);display:block;margin-top:1px;}
-.col-negro{color:var(--negro);}
-.col-rojo {color:var(--rojo);}
-.col-verde{color:var(--verde);}
-
-.d-barra{padding:7px 14px 4px;}
-.d-barra-track{background:var(--fondo2);border-radius:99px;height:4px;overflow:hidden;}
-.d-barra-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#5ba8d4,#7ec8e3);transition:width 0.5s ease;}
-.d-barra-pct{font-size:9px;color:var(--txt2);text-align:right;margin-top:2px;}
-
-.d-acciones{display:flex;gap:8px;padding:9px 12px;}
-.btn-sm{
-  flex:1;padding:10px 6px;border-radius:10px;border:none;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:transform 0.12s;min-height:40px;
-}
-.btn-sm:active{transform:scale(0.95);}
-.btn-sm-azul{background:var(--fondo2);color:var(--azul3);border:1px solid var(--borde);}
-.btn-sm-rojo{background:#fce8e8;color:#b03030;border:1px solid #f0c8c8;}
-
-/* ── MODAL ── */
-.modal-overlay{
-  position:fixed;inset:0;
-  background:rgba(0,0,0,0.5);
-  display:none;align-items:flex-end;justify-content:center;
-  z-index:1000;backdrop-filter:blur(4px);
-}
+/* MODAL EDITAR ABONO */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
 .modal-overlay.open{display:flex;}
-.modal{
-  background:#fff;border-radius:22px 22px 0 0;
-  padding:20px 16px max(env(safe-area-inset-bottom,20px),30px);
-  width:100%;max-width:600px;
-  border-top:3px solid var(--azul);
-  animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
-  max-height:85vh;overflow-y:auto;
-}
+.modal{background:#fff;border-radius:22px 22px 0 0;padding:20px 16px max(env(safe-area-inset-bottom,20px),30px);width:100%;max-width:480px;border-top:3px solid var(--azul);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-titulo{font-size:17px;font-weight:800;color:var(--azul3);}
-.modal-sub{font-size:11px;color:var(--txt2);margin-top:3px;margin-bottom:14px;}
-.modal-resumen{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px;}
-.mres-item{background:var(--fondo2);border-radius:11px;padding:10px 6px;text-align:center;border:0.5px solid var(--borde);}
-.mres-val{font-size:12px;font-weight:800;display:block;}
-.mres-lbl{font-size:9px;color:var(--txt2);display:block;margin-top:1px;}
-.modal-dias{
-  background:var(--fondo2);border-radius:12px;padding:10px 14px;
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:14px;border:0.5px solid var(--borde);
-}
-.modal-dias-lbl{font-size:11px;color:var(--txt2);}
-.modal-dias-val{font-size:14px;font-weight:800;color:var(--txt);}
-.abono-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:10px 12px;background:var(--fondo2);
-  border-radius:11px;margin-bottom:7px;border:0.5px solid var(--borde);
-}
-.abono-num{font-size:12px;font-weight:700;color:var(--txt);}
-.abono-fecha{font-size:10px;color:var(--txt2);}
-.abono-val{font-size:13px;font-weight:800;color:var(--verde);}
-.btn-cerrar{
-  width:100%;margin-top:10px;padding:14px;
-  background:var(--fondo2);border:0.5px solid var(--borde);
-  border-radius:12px;color:var(--txt);
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:15px;font-weight:700;cursor:pointer;min-height:50px;
-}
+.modal-titulo{font-size:16px;font-weight:800;color:var(--azul3);margin-bottom:14px;}
+.btn-cerrar{width:100%;margin-top:8px;padding:13px;background:var(--fondo2);border:0.5px solid var(--borde);border-radius:12px;color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
 
-/* ── TOAST ── */
-.toast{
-  position:fixed;bottom:max(env(safe-area-inset-bottom,16px),24px);
-  left:50%;transform:translateX(-50%) translateY(20px);
-  padding:11px 22px;border-radius:30px;
-  font-weight:800;font-size:14px;
-  opacity:0;transition:all 0.3s;
-  z-index:9999;pointer-events:none;
-  white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.15);
-}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--borde);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 0 max(env(safe-area-inset-bottom),8px);z-index:100;box-shadow:0 -4px 20px rgba(91,168,212,0.1);}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;cursor:pointer;transition:transform 0.1s;}
+.nav-item:active{transform:scale(0.92);}
+.nav-ico{font-size:20px;line-height:1;}
+.nav-lbl{font-size:9px;font-weight:700;color:var(--txt2);}
+.nav-item.act .nav-lbl{color:var(--azul);}
+.nav-dot{width:4px;height:4px;background:var(--azul);border-radius:50%;margin-bottom:1px;}
+
+.toast{position:fixed;bottom:max(calc(64px + env(safe-area-inset-bottom)),80px);left:50%;transform:translateX(-50%) translateY(20px);padding:11px 22px;border-radius:30px;font-weight:800;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.t-ok  {background:linear-gradient(135deg,#1e8a45,#2ecc71);color:#fff;}
-.t-err {background:linear-gradient(135deg,#cc2020,#ff5050);color:#fff;}
+.t-ok{background:linear-gradient(135deg,#1e8a45,#2ecc71);color:#fff;}
+.t-err{background:linear-gradient(135deg,#cc2020,#ff5050);color:#fff;}
 .t-warn{background:linear-gradient(135deg,#c08000,#f0c040);color:#fff;}
 
-/* ── ESTADO VACÍO ── */
-.estado-vacio{text-align:center;padding:24px 16px;color:var(--txt2);}
-.estado-vacio p{font-size:13px;}
-.estado-vacio small{font-size:11px;color:var(--borde);display:block;margin-top:3px;}
+.vacio{text-align:center;padding:30px 16px;color:var(--txt2);}
+.vacio-ico{font-size:40px;display:block;margin-bottom:8px;}
+.vacio p{font-size:13px;line-height:1.5;}
+.vacio small{font-size:11px;color:var(--borde);display:block;margin-top:3px;}
+
+/* ── LOCK SCREEN ── */
+.lock-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,var(--navy) 0%,#0d2235 60%,#1a3a50 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;transition:opacity 0.4s,transform 0.4s;}
+.lock-screen.oculto{opacity:0;transform:scale(1.04);pointer-events:none;}
+.lock-logo{font-size:52px;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(91,168,212,0.4));}
+.lock-titulo{font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:4px;}
+.lock-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:36px;}
+.lock-dots{display:flex;gap:14px;margin-bottom:32px;}
+.lock-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);transition:background 0.15s,transform 0.15s;}
+.lock-dot.lleno{background:#fff;border-color:#fff;transform:scale(1.1);}
+.lock-dot.error{background:#ff5050;border-color:#ff5050;animation:shake 0.4s ease;}
+.lock-teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px;}
+.lock-key{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 0;font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:#fff;cursor:pointer;text-align:center;transition:background 0.1s,transform 0.1s;-webkit-tap-highlight-color:transparent;user-select:none;}
+.lock-key:active{background:rgba(255,255,255,0.22);transform:scale(0.94);}
+.lock-key.borrar{font-size:16px;}
+.lock-key.vacio{visibility:hidden;}
+.lock-error-msg{font-size:12px;color:#ff7070;margin-top:16px;font-weight:700;opacity:0;transition:opacity 0.3s;min-height:18px;}
+.lock-error-msg.show{opacity:1;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<div class="hdr">
-  <div>
-    <div class="hdr-titulo">💰 Cuentas Pendientes</div>
+<!-- LOCK SCREEN -->
+<div class="lock-screen" id="lock-screen">
+  <div class="lock-logo">💰</div>
+  <div class="lock-titulo">Cuentas Pendientes</div>
+  <div class="lock-sub">Ingresa tu clave para continuar</div>
+  <div class="lock-dots" id="lock-dots">
+    <div class="lock-dot" id="ld0"></div>
+    <div class="lock-dot" id="ld1"></div>
+    <div class="lock-dot" id="ld2"></div>
+    <div class="lock-dot" id="ld3"></div>
   </div>
-  <div style="text-align:right;">
-    <div class="hdr-sub" id="hdr-sub">0</div>
-    <div class="hdr-badge" id="hdr-sync">⏳</div>
+  <div class="lock-teclado">
+    <div class="lock-key" onclick="lockTecla('1')">1</div>
+    <div class="lock-key" onclick="lockTecla('2')">2</div>
+    <div class="lock-key" onclick="lockTecla('3')">3</div>
+    <div class="lock-key" onclick="lockTecla('4')">4</div>
+    <div class="lock-key" onclick="lockTecla('5')">5</div>
+    <div class="lock-key" onclick="lockTecla('6')">6</div>
+    <div class="lock-key" onclick="lockTecla('7')">7</div>
+    <div class="lock-key" onclick="lockTecla('8')">8</div>
+    <div class="lock-key" onclick="lockTecla('9')">9</div>
+    <div class="lock-key vacio"></div>
+    <div class="lock-key" onclick="lockTecla('0')">0</div>
+    <div class="lock-key borrar" onclick="lockBorrar()">⌫</div>
+  </div>
+  <div class="lock-error-msg" id="lock-error">Clave incorrecta, intenta de nuevo</div>
+</div>
+
+<div class="hdr">
+  <div><div class="hdr-titulo">💰 Cuentas Pendientes</div></div>
+  <div class="hdr-right">
+    <div class="hdr-num" id="hdr-num">0</div>
   </div>
 </div>
 
-<div class="main">
-
-  <!-- BUSCAR -->
-  <div class="card" style="padding:12px;">
-    <input class="busqueda" id="busqueda" placeholder="🔍  Buscar..." oninput="buscar(this.value)" autocomplete="off">
-    <div id="resultado-busqueda"></div>
-  </div>
-
-  <!-- RESUMEN -->
-  <div class="card">
-    <div class="colapsa-header" onclick="toggleColapsa('body-resumen','flecha-resumen')">
-      <div class="colapsa-titulo">📊 Resumen general <span class="ctag ctag-azul">Solo pendientes</span></div>
-      <div class="colapsa-flecha" id="flecha-resumen">▾</div>
-    </div>
-    <div class="colapsa-cuerpo" id="body-resumen">
-      <div class="resumen-total">
-        <div class="res-label">Total pendiente por cobrar</div>
-        <div class="res-grande" id="res-pendiente">$0</div>
-        <div class="res-sub" id="res-sub-txt">0 deudores activos</div>
-        <div class="res-grid">
-          <div class="res-item">
-            <span class="res-item-val" id="res-prestado">$0</span>
-            <span class="res-item-lbl">💳 Total prestado</span>
-          </div>
-          <div class="res-item">
-            <span class="res-item-val" id="res-abonado">$0</span>
-            <span class="res-item-lbl">✅ Total abonado</span>
-          </div>
-        </div>
-        <div class="barra-wrap"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
-        <div class="barra-labels"><span>Recuperación</span><span id="barra-pct">0%</span></div>
+<!-- BUSCAR -->
+<div class="page activa" id="pg-buscar">
+  <div class="scroll">
+    <input class="busqueda" id="busqueda" placeholder="🔍  Buscar por nombre..." oninput="buscar(this.value)" autocomplete="off">
+    <div id="lista-busqueda">
+      <div class="vacio">
+        <span class="vacio-ico">🔍</span>
+        <p>Escribe para buscar un deudor</p>
+        <small>Solo aparecen deudores con saldo pendiente</small>
       </div>
     </div>
   </div>
-
-  <div class="divider">Registros</div>
-
-  <!-- REGISTRAR PRÉSTAMO -->
-  <div class="card">
-    <div class="colapsa-header" onclick="toggleColapsa('body-prestamo','flecha-prestamo')">
-      <div class="colapsa-titulo">👤 Registrar préstamo <span class="ctag ctag-azul">Nuevo</span></div>
-      <div class="colapsa-flecha" id="flecha-prestamo">▾</div>
-    </div>
-    <div class="colapsa-cuerpo" id="body-prestamo">
-      <div class="campo"><label>Fecha del préstamo</label><input type="date" id="reg-fecha"></div>
-      <div class="campo"><label>Nombre completo</label><input type="text" id="reg-nombre" placeholder="Ej: Juan Pérez"></div>
-      <div class="campo"><label>Código</label><input type="text" id="reg-codigo" placeholder="Ej: 001 / JP-01"></div>
-      <div class="campo"><label>Valor prestado</label><input type="number" id="reg-deuda" placeholder="0" inputmode="numeric"></div>
-      <button class="btn btn-azul" onclick="registrar()">✅ Registrar préstamo</button>
-    </div>
-  </div>
-
-  <!-- REGISTRAR ABONO -->
-  <div class="card">
-    <div class="colapsa-header" onclick="toggleColapsa('body-abono','flecha-abono')">
-      <div class="colapsa-titulo">💵 Registrar abono <span class="ctag ctag-verde">Pago</span></div>
-      <div class="colapsa-flecha" id="flecha-abono">▾</div>
-    </div>
-    <div class="colapsa-cuerpo" id="body-abono">
-      <div class="campo"><label>Fecha del abono</label><input type="date" id="abo-fecha"></div>
-      <div class="campo"><label>Código del deudor</label><input type="text" id="abo-codigo" placeholder="Ingresa el código"></div>
-      <div class="campo"><label>Valor del abono</label><input type="number" id="abo-valor" placeholder="0" inputmode="numeric"></div>
-      <button class="btn btn-verde" onclick="abonar()">💰 Registrar abono</button>
-    </div>
-  </div>
-
 </div>
 
-<!-- MODAL HISTORIAL -->
-<div class="modal-overlay" id="modal" onclick="cerrarModal(event)">
+<!-- PERFIL -->
+<div class="page" id="pg-perfil">
+  <div class="scroll">
+    <div class="perfil-hdr">
+      <div class="perfil-hdr-top">
+        <div class="perfil-avatar" id="pf-avatar">?</div>
+        <div class="perfil-info">
+          <div class="perfil-nombre" id="pf-nombre">—</div>
+          <div class="perfil-fecha" id="pf-fecha">📅 —</div>
+        </div>
+        <span class="perfil-pill badge-dias" id="pf-pill">—</span>
+      </div>
+    </div>
+
+    <div class="metricas">
+      <div class="met"><span class="met-val" id="pf-prestado" style="color:var(--negro);">$0</span><span class="met-lbl">Prestado</span></div>
+      <div class="met"><span class="met-val" id="pf-abonado"  style="color:var(--rojo);">$0</span><span class="met-lbl">Abonado</span></div>
+      <div class="met"><span class="met-val" id="pf-saldo"    style="color:var(--verde);">$0</span><span class="met-lbl">Saldo</span></div>
+    </div>
+
+    <!-- Progreso -->
+    <div class="card" style="margin-top:10px;">
+      <div class="prog-wrap">
+        <div class="prog-top">
+          <span class="prog-lbl">Progreso de pago</span>
+          <span class="prog-pct" id="pf-pct">0%</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="pf-barra" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <!-- Editar deuda -->
+    <div class="card" id="pf-edit-deuda-card">
+      <div class="colapsa-header" onclick="toggleColapsa('body-edit-deuda','flecha-edit-deuda')">
+        <div class="colapsa-titulo">✏️ Editar deuda <span class="ctag ctag-azul">Modificar</span></div>
+        <div class="colapsa-flecha" id="flecha-edit-deuda">▾</div>
+      </div>
+      <div class="colapsa-cuerpo" id="body-edit-deuda">
+        <div class="campo">
+          <label>Nuevo valor de la deuda</label>
+          <input type="number" id="edit-deuda-val" class="azul" placeholder="0" inputmode="numeric">
+        </div>
+        <button class="btn btn-naranja" onclick="editarDeuda()">💾 Guardar cambio</button>
+      </div>
+    </div>
+
+    <!-- Historial -->
+    <div class="card">
+      <div class="hist-titulo">📋 Historial de abonos</div>
+      <div id="pf-historial"></div>
+    </div>
+
+    <!-- Form abono -->
+    <div class="form-abono-perfil">
+      <div class="form-abono-titulo">💵 Registrar nuevo abono</div>
+      <div class="campo"><label>Fecha del abono</label><input type="date" id="pf-abo-fecha"></div>
+      <div class="campo"><label>Valor del abono</label><input type="number" id="pf-abo-valor" placeholder="0" inputmode="numeric"></div>
+      <button class="btn btn-verde" onclick="abonarPerfil()">💰 Registrar abono</button>
+    </div>
+
+    <button class="btn-eliminar-perfil" id="pf-btn-eliminar">🗑️ Eliminar deudor</button>
+    <div style="height:4px;"></div>
+  </div>
+</div>
+
+<!-- RESUMEN -->
+<div class="page" id="pg-resumen">
+  <div class="scroll">
+    <div class="card">
+      <div class="colapsa-header" onclick="toggleColapsa('body-resumen','flecha-resumen')">
+        <div class="colapsa-titulo">📊 Resumen general <span class="ctag ctag-azul">Solo pendientes</span></div>
+        <div class="colapsa-flecha" id="flecha-resumen">▾</div>
+      </div>
+      <div class="colapsa-cuerpo" id="body-resumen">
+        <div class="resumen-total">
+          <div class="res-label">Total pendiente por cobrar</div>
+          <div class="res-grande" id="res-pendiente">$0</div>
+          <div class="res-sub" id="res-sub-txt">0 deudores activos</div>
+          <div class="res-grid">
+            <div class="res-item"><span class="res-item-val" id="res-prestado">$0</span><span class="res-item-lbl">💳 Total prestado</span></div>
+            <div class="res-item"><span class="res-item-val" id="res-abonado">$0</span><span class="res-item-lbl">✅ Total abonado</span></div>
+          </div>
+          <div class="barra-wrap"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
+          <div class="barra-labels"><span>Recuperación</span><span id="barra-pct">0%</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRÉSTAMO -->
+<div class="page" id="pg-prestamo">
+  <div class="scroll">
+    <div class="card">
+      <div class="colapsa-header" onclick="toggleColapsa('body-prestamo','flecha-prestamo')">
+        <div class="colapsa-titulo">👤 Registrar préstamo <span class="ctag ctag-azul">Nuevo</span></div>
+        <div class="colapsa-flecha" id="flecha-prestamo">▾</div>
+      </div>
+      <div class="colapsa-cuerpo" id="body-prestamo">
+        <div class="campo"><label>Fecha del préstamo</label><input type="date" id="reg-fecha"></div>
+        <div class="campo"><label>Nombre completo</label><input type="text" id="reg-nombre" class="azul" placeholder="Ej: Juan Pérez"></div>
+        <div class="campo"><label>Valor prestado</label><input type="number" id="reg-deuda" class="azul" placeholder="0" inputmode="numeric"></div>
+        <button class="btn btn-azul" onclick="registrar()">✅ Registrar préstamo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ABONO -->
+<div class="page" id="pg-abono">
+  <div class="scroll">
+    <div class="card">
+      <div class="colapsa-header" onclick="toggleColapsa('body-abono','flecha-abono')">
+        <div class="colapsa-titulo">💵 Registrar abono <span class="ctag ctag-verde">Pago</span></div>
+        <div class="colapsa-flecha" id="flecha-abono">▾</div>
+      </div>
+      <div class="colapsa-cuerpo" id="body-abono">
+        <div class="campo"><label>Fecha del abono</label><input type="date" id="abo-fecha"></div>
+        <div class="campo"><label>Nombre del deudor</label><input type="text" id="abo-nombre" placeholder="Escribe el nombre" class="azul"></div>
+        <div class="campo"><label>Valor del abono</label><input type="number" id="abo-valor" placeholder="0" inputmode="numeric"></div>
+        <button class="btn btn-verde" onclick="abonar()">💰 Registrar abono</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR ABONO -->
+<div class="modal-overlay" id="modal-edit-abono" onclick="cerrarModalEdit(event)">
   <div class="modal">
-    <div class="modal-titulo" id="m-titulo">Historial</div>
-    <div class="modal-sub" id="m-sub"></div>
-    <div class="modal-resumen">
-      <div class="mres-item"><span class="mres-val col-negro" id="m-prestado">$0</span><span class="mres-lbl">Prestado</span></div>
-      <div class="mres-item"><span class="mres-val col-rojo"  id="m-abonado">$0</span><span class="mres-lbl">Abonado</span></div>
-      <div class="mres-item"><span class="mres-val col-verde" id="m-saldo">$0</span><span class="mres-lbl">Saldo</span></div>
-    </div>
-    <div class="modal-dias">
-      <span class="modal-dias-lbl">📅 Días desde el préstamo</span>
-      <span class="modal-dias-val" id="m-dias">0 días</span>
-    </div>
-    <div id="m-abonos"></div>
-    <button class="btn-cerrar" onclick="cerrarModal()">✕ Cerrar</button>
+    <div class="modal-titulo">✏️ Editar abono</div>
+    <div class="campo"><label>Fecha</label><input type="date" id="edit-abo-fecha"></div>
+    <div class="campo"><label>Valor</label><input type="number" id="edit-abo-valor" placeholder="0" inputmode="numeric"></div>
+    <button class="btn btn-naranja" onclick="guardarEditAbono()">💾 Guardar cambio</button>
+    <button class="btn-cerrar" onclick="cerrarModalEdit()">✕ Cancelar</button>
   </div>
 </div>
+
+<!-- ══ PÁGINA: LISTA TODOS DEUDORES ══ -->
+<div class="page" id="pg-lista">
+  <div class="scroll">
+    <div id="lista-todos"></div>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-item act" id="nav-buscar" onclick="irA('buscar')">
+    <div class="nav-dot"></div><span class="nav-ico">🔍</span><span class="nav-lbl">Buscar</span>
+  </div>
+  <div class="nav-item" id="nav-prestamo" onclick="irA('prestamo')">
+    <span class="nav-ico">👤</span><span class="nav-lbl">Registrar</span>
+  </div>
+  <div class="nav-item" id="nav-lista" onclick="irA('lista')">
+    <span class="nav-ico">📋</span><span class="nav-lbl">Deudores</span>
+  </div>
+  <div class="nav-item" id="nav-resumen" onclick="irA('resumen')">
+    <span class="nav-ico">📊</span><span class="nav-lbl">Resumen</span>
+  </div>
+</nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ════════════════════════════════
-   STORAGE — guarda en localStorage
-   Y también en window.storage si está disponible
-════════════════════════════════ */
-const KEY = 'cuentas_pendientes_v5';
+const KEY = 'cuentas_pendientes_v6';
 let personas = [];
+let codigoActual = null;
+let editAbonoIdx = null;
 
+/* ══ STORAGE ══ */
 async function cargar() {
-  // 1. Intenta cargar desde localStorage primero (siempre disponible)
   const local = localStorage.getItem(KEY);
-  // 2. Intenta también desde window.storage (nube)
   try {
     const nube = await window.storage.get(KEY);
     if (nube && nube.value) {
-      const dataNube = JSON.parse(nube.value);
-      // Usa la que tenga más registros
-      if (!local || dataNube.length >= JSON.parse(local).length) {
-        localStorage.setItem(KEY, nube.value); // sincroniza local
-        return dataNube;
+      const dn = JSON.parse(nube.value);
+      if (!local || dn.length >= JSON.parse(local).length) {
+        localStorage.setItem(KEY, nube.value);
+        return dn;
       }
     }
   } catch(e) {}
-  // 3. Fallback: localStorage
   return local ? JSON.parse(local) : [];
 }
-
 async function guardar() {
   const d = JSON.stringify(personas);
-  // Siempre guarda en localStorage (nunca se pierde)
   localStorage.setItem(KEY, d);
-  // También intenta guardar en nube
-  try {
-    await window.storage.set(KEY, d);
-    setSync('☁️');
-  } catch(e) {
-    setSync('💾');
-  }
+  try { await window.storage.set(KEY, d); setSync('☁️'); }
+  catch(e) { setSync('💾'); }
 }
-
-function setSync(icono) {
+function setSync(ico) {
   const el = document.getElementById('hdr-sync');
-  el.textContent = icono + ' Guardado';
+  el.textContent = ico + ' Guardado';
   setTimeout(() => el.textContent = '✅ Listo', 2000);
 }
 
-/* ════════════════════════════════
-   INIT
-════════════════════════════════ */
+/* ══ INIT ══ */
 async function init() {
   personas = await cargar();
   document.getElementById('reg-fecha').value = hoy();
   document.getElementById('abo-fecha').value = hoy();
+  document.getElementById('pf-abo-fecha').value = hoy();
   actualizarResumen();
 }
 
-/* ════════════════════════════════
-   UTILIDADES
-════════════════════════════════ */
+/* ══ UTILS ══ */
 function hoy() { return new Date().toISOString().split('T')[0]; }
-
 function fmt(n) { return '$' + Number(n).toLocaleString('es-CO'); }
-
 function dias(f) { return Math.max(0, Math.floor((new Date() - new Date(f)) / 86400000)); }
-
-function totalAbo(lista) { return (lista || []).reduce((s, a) => s + Number(a.valor), 0); }
-
+function totalAbo(lista) { return (lista||[]).reduce((s,a) => s + Number(a.valor), 0); }
 function saldo(p) { return Math.max(0, p.deuda - totalAbo(p.abonos)); }
 
-function urgencia(d) {
-  if (d <= 7)  return { cls:'urg-ok',   bdg:'b-ok',   txt:`🕐 ${d}d` };
-  if (d <= 20) return { cls:'urg-med',  bdg:'b-med',  txt:`⚠️ ${d}d` };
-  if (d <= 40) return { cls:'urg-alta', bdg:'b-alta', txt:`🔥 ${d}d` };
-  return             { cls:'urg-crit', bdg:'b-crit', txt:`💀 ${d}d` };
+// Genera código único a partir del nombre
+function generarCodigo(nombre) {
+  const partes = nombre.trim().split(' ');
+  const base = partes.map(p => p[0]||'').join('').toUpperCase().slice(0,3);
+  let n = 1;
+  while (personas.find(p => p.codigo === base + n)) n++;
+  return base + n;
 }
 
+// Fecha bonita: "Febrero 26"
+function fmtFecha(f) {
+  if (!f) return '—';
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  const [y, m, d] = f.split('-').map(Number);
+  return `${meses[m-1]} ${d}`;
+}
+
+function iniciales(nombre) {
+  const p = nombre.trim().split(' ');
+  return ((p[0]?.[0]||'') + (p[1]?.[0]||'')).toUpperCase();
+}
+function colAvatar(nombre) {
+  const cols = ['#5ba8d4','#7ec8e3','#3a9abc','#1e8a45','#c08000','#e08030'];
+  let h = 0;
+  for(let c of nombre) h = (h*31 + c.charCodeAt(0)) % cols.length;
+  return cols[h];
+}
+function urgencia(d) {
+  if (d <= 7)  return { cls:'urg-ok',  bdg:'b-ok',   txt:`🕐 ${d}d` };
+  if (d <= 20) return { cls:'urg-med', bdg:'b-med',  txt:`⚠️ ${d}d` };
+  if (d <= 40) return { cls:'urg-alta',bdg:'b-alta', txt:`🔥 ${d}d` };
+  return             { cls:'urg-crit',bdg:'b-crit', txt:`💀 ${d}d` };
+}
 function toast(msg, tipo='ok') {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = `toast t-${tipo} show`;
+  t.textContent = msg; t.className = `toast t-${tipo} show`;
   setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-/* ════════════════════════════════
-   COLAPSA
-════════════════════════════════ */
-function toggleColapsa(idCuerpo, idFlecha) {
-  const cuerpo = document.getElementById(idCuerpo);
-  const flecha = document.getElementById(idFlecha);
-  const abierto = cuerpo.classList.toggle('abierto');
-  flecha.classList.toggle('abierto', abierto);
+/* ══ NAV ══ */
+const paginas = ['buscar','resumen','prestamo','lista'];
+function irA(pg) {
+  paginas.forEach(p => {
+    document.getElementById(`pg-${p}`).classList.remove('activa');
+    document.getElementById(`nav-${p}`).classList.remove('act');
+    const dot = document.querySelector(`#nav-${p} .nav-dot`);
+    if(dot) dot.remove();
+  });
+  document.getElementById(`pg-${pg}`).classList.add('activa');
+  document.getElementById('pg-perfil').classList.remove('activa');
+  const nav = document.getElementById(`nav-${pg}`);
+  nav.classList.add('act');
+  const dot = document.createElement('div');
+  dot.className = 'nav-dot';
+  nav.insertBefore(dot, nav.firstChild);
+  actualizarResumen();
+  if(pg === 'lista') renderLista();
+}
+function toggleColapsa(idC, idF) {
+  const c = document.getElementById(idC), f = document.getElementById(idF);
+  const a = c.classList.toggle('abierto');
+  f.classList.toggle('abierto', a);
 }
 
-/* ════════════════════════════════
-   RESUMEN
-════════════════════════════════ */
-function actualizarResumen() {
-  const activos   = personas.filter(p => saldo(p) > 0);
-  const tDeuda    = activos.reduce((s, p) => s + p.deuda, 0);
-  const tAbonado  = activos.reduce((s, p) => s + totalAbo(p.abonos), 0);
-  const tPendiente = activos.reduce((s, p) => s + saldo(p), 0);
-  const pct = tDeuda > 0 ? Math.round((tAbonado / tDeuda) * 100) : 0;
+/* ══ LISTA TODOS DEUDORES ══ */
+function renderLista() {
+  const cont = document.getElementById('lista-todos');
+  const activos = personas.filter(p => saldo(p) > 0)
+    .sort((a,b) => dias(b.fecha) - dias(a.fecha));
+  if(!activos.length) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🎉</span><p>¡Sin deudores pendientes!</p><small>Todos han pagado</small></div>`;
+    return;
+  }
+  cont.innerHTML = activos.map((p, i) => {
+    const d = dias(p.fecha), sal = saldo(p), urg = urgencia(d);
+    const col = colAvatar(p.nombre), ini = iniciales(p.nombre).toUpperCase();
+    return `<div class="deudor-item ${urg.cls}" style="animation-delay:${i*0.04}s" onclick="abrirPerfil('${p.codigo}')">
+      <div class="avatar" style="background:${col};">${ini}</div>
+      <div class="item-info">
+        <div class="item-nombre">${p.nombre}</div>
+        <div class="item-meta">Código: ${p.codigo} · 📅 ${p.fecha}</div>
+        <div class="item-saldo">${fmt(sal)} pendiente</div>
+      </div>
+      <span class="badge-dias ${urg.bdg}">${urg.txt}</span>
+    </div>`;
+  }).join('');
+}
 
+/* ══ RESUMEN ══ */
+function actualizarResumen() {
+  const activos    = personas.filter(p => saldo(p) > 0);
+  const tDeuda     = activos.reduce((s,p) => s + p.deuda, 0);
+  const tAbonado   = activos.reduce((s,p) => s + totalAbo(p.abonos), 0);
+  const tPendiente = activos.reduce((s,p) => s + saldo(p), 0);
+  const pct = tDeuda > 0 ? Math.round((tAbonado/tDeuda)*100) : 0;
   document.getElementById('res-pendiente').textContent = fmt(tPendiente);
   document.getElementById('res-prestado').textContent  = fmt(tDeuda);
   document.getElementById('res-abonado').textContent   = fmt(tAbonado);
   document.getElementById('res-sub-txt').textContent   = `${activos.length} deudores activos`;
   document.getElementById('barra-fill').style.width    = pct + '%';
   document.getElementById('barra-pct').textContent     = pct + '%';
-  document.getElementById('hdr-sub').textContent       = activos.length;
+  document.getElementById('hdr-num').textContent       = activos.length;
 }
 
-/* ════════════════════════════════
-   REGISTRAR PRÉSTAMO
-════════════════════════════════ */
-async function registrar() {
-  const fecha  = document.getElementById('reg-fecha').value;
-  const nombre = document.getElementById('reg-nombre').value.trim();
-  const codigo = document.getElementById('reg-codigo').value.trim().toUpperCase();
-  const deuda  = Number(document.getElementById('reg-deuda').value);
-
-  if (!fecha || !nombre || !codigo || !deuda) {
-    toast('⚠️ Completa todos los campos', 'warn'); return;
+/* ══ BUSCAR ══ */
+function buscar(filtro) {
+  const cont = document.getElementById('lista-busqueda');
+  const q = filtro.trim().toLowerCase();
+  if (!q) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe para buscar un deudor</p><small>Solo aparecen deudores con saldo pendiente</small></div>`;
+    return;
   }
-  if (personas.find(p => p.codigo === codigo)) {
-    toast('⚠️ Ese código ya existe', 'warn'); return;
+  const lista = personas.filter(p => saldo(p) > 0 && p.nombre.toLowerCase().includes(q));
+  if (!lista.length) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${filtro}</strong>"</p><small>Verifica el nombre</small></div>`;
+    return;
   }
+  cont.innerHTML = lista.map((p, i) => {
+    const d = dias(p.fecha), sal = saldo(p), urg = urgencia(d);
+    const col = colAvatar(p.nombre), ini = iniciales(p.nombre);
+    return `<div class="deudor-item ${urg.cls}" style="animation-delay:${i*0.05}s" onclick="abrirPerfil('${p.codigo}')">
+      <div class="avatar" style="background:${col};">${ini}</div>
+      <div class="item-info">
+        <div class="item-nombre">${p.nombre}</div>
+        <div class="item-meta">📅 Desde ${fmtFecha(p.fecha)}</div>
+        <div class="item-saldo">${fmt(sal)} pendiente</div>
+      </div>
+      <span class="badge-dias ${urg.bdg}">${urg.txt}</span>
+    </div>`;
+  }).join('');
+}
 
-  personas.push({ fecha, nombre, codigo, deuda, abonos: [] });
+/* ══ PERFIL ══ */
+function abrirPerfil(codigo) {
+  const p = personas.find(x => x.codigo === codigo);
+  if (!p) return;
+  codigoActual = codigo;
+  const d = dias(p.fecha), abo = totalAbo(p.abonos), sal = saldo(p);
+  const pct = p.deuda > 0 ? Math.min(100, Math.round((abo/p.deuda)*100)) : 0;
+  const urg = urgencia(d);
+
+  paginas.forEach(pg => document.getElementById(`pg-${pg}`).classList.remove('activa'));
+  document.getElementById('pg-perfil').classList.add('activa');
+
+  const col = colAvatar(p.nombre), ini = iniciales(p.nombre);
+  document.getElementById('pf-avatar').textContent = ini;
+  document.getElementById('pf-avatar').style.background = col;
+  document.getElementById('pf-nombre').textContent   = p.nombre;
+  document.getElementById('pf-fecha').textContent    = `📅 Préstamo: ${fmtFecha(p.fecha)}`;
+  document.getElementById('pf-prestado').textContent = fmt(p.deuda);
+  document.getElementById('pf-abonado').textContent  = fmt(abo);
+  document.getElementById('pf-saldo').textContent    = fmt(sal);
+  document.getElementById('pf-pct').textContent      = pct + '%';
+  document.getElementById('pf-barra').style.width    = pct + '%';
+  document.getElementById('edit-deuda-val').value    = p.deuda;
+
+  const pill = document.getElementById('pf-pill');
+  pill.textContent = urg.txt;
+  pill.className   = `perfil-pill badge-dias ${urg.bdg}`;
+
+  // historial con botón editar en cada abono
+  let html = '';
+  if (!p.abonos.length) {
+    html = '<div class="sin-abonos">Sin abonos registrados aún</div>';
+  } else {
+    [...p.abonos].reverse().forEach((a, i) => {
+      const idx = p.abonos.length - 1 - i; // índice real en el array
+      html += `<div class="abono-row">
+        <div class="abo-izq">
+          <div class="abo-num">Abono #${p.abonos.length - i}</div>
+          <div class="abo-fecha">${fmtFecha(a.fecha)}</div>
+        </div>
+        <div class="abo-der">
+          <span class="abo-val">${fmt(a.valor)}</span>
+          <button class="btn-edit-ico" onclick="abrirEditAbono(${idx})" title="Editar">✏️</button>
+        </div>
+      </div>`;
+    });
+  }
+  document.getElementById('pf-historial').innerHTML = html;
+  document.getElementById('pf-abo-fecha').value = hoy();
+  document.getElementById('pf-abo-valor').value = '';
+  document.getElementById('pf-btn-eliminar').onclick = () => eliminar(codigo);
+  document.getElementById('pg-perfil').querySelector('.scroll').scrollTop = 0;
+}
+
+/* ══ EDITAR DEUDA ══ */
+async function editarDeuda() {
+  const p = personas.find(x => x.codigo === codigoActual);
+  if (!p) return;
+  const nuevo = Number(document.getElementById('edit-deuda-val').value);
+  if (!nuevo || nuevo <= 0) { toast('⚠️ Ingresa un valor válido','warn'); return; }
+  p.deuda = nuevo;
   await guardar();
   actualizarResumen();
-
-  document.getElementById('reg-nombre').value = '';
-  document.getElementById('reg-codigo').value = '';
-  document.getElementById('reg-deuda').value  = '';
-  toast(`✅ ${nombre} registrado`);
-
-  const b = document.getElementById('busqueda').value;
-  if (b) buscar(b);
+  toast('✅ Deuda actualizada');
+  abrirPerfil(codigoActual);
 }
 
-/* ════════════════════════════════
-   REGISTRAR ABONO
-════════════════════════════════ */
-async function abonar() {
-  const fecha  = document.getElementById('abo-fecha').value || hoy();
-  const codigo = document.getElementById('abo-codigo').value.trim().toUpperCase();
-  const valor  = Number(document.getElementById('abo-valor').value);
+/* ══ EDITAR ABONO ══ */
+function abrirEditAbono(idx) {
+  const p = personas.find(x => x.codigo === codigoActual);
+  if (!p) return;
+  editAbonoIdx = idx;
+  document.getElementById('edit-abo-fecha').value = p.abonos[idx].fecha;
+  document.getElementById('edit-abo-valor').value = p.abonos[idx].valor;
+  document.getElementById('modal-edit-abono').classList.add('open');
+}
+async function guardarEditAbono() {
+  const p = personas.find(x => x.codigo === codigoActual);
+  if (!p || editAbonoIdx === null) return;
+  const fecha = document.getElementById('edit-abo-fecha').value || hoy();
+  const valor = Number(document.getElementById('edit-abo-valor').value);
+  if (!valor) { toast('⚠️ Ingresa un valor','warn'); return; }
+  p.abonos[editAbonoIdx] = { fecha, valor };
+  await guardar();
+  actualizarResumen();
+  cerrarModalEdit();
+  toast('✅ Abono actualizado');
+  abrirPerfil(codigoActual);
+}
+function cerrarModalEdit(e) {
+  if (!e || e.target === document.getElementById('modal-edit-abono'))
+    document.getElementById('modal-edit-abono').classList.remove('open');
+}
 
-  if (!codigo || !valor) {
-    toast('⚠️ Ingresa código y valor', 'warn'); return;
-  }
-  const p = personas.find(x => x.codigo === codigo);
-  if (!p) {
-    toast('❌ Código no encontrado', 'err'); return;
-  }
-
+/* ══ ABONAR DESDE PERFIL ══ */
+async function abonarPerfil() {
+  const p = personas.find(x => x.codigo === codigoActual);
+  if (!p) return;
+  const fecha = document.getElementById('pf-abo-fecha').value || hoy();
+  const valor = Number(document.getElementById('pf-abo-valor').value);
+  if (!valor) { toast('⚠️ Ingresa un valor','warn'); return; }
   p.abonos.push({ fecha, valor });
   await guardar();
   actualizarResumen();
-  document.getElementById('abo-valor').value = '';
-
-  const s = saldo(p);
-  toast(s <= 0 ? `🎉 ¡${p.nombre} pagó todo!` : `✅ Abono a ${p.nombre}`);
-
-  const b = document.getElementById('busqueda').value;
-  if (b) buscar(b);
+  toast(saldo(p) <= 0 ? `🎉 ¡${p.nombre} pagó todo!` : `✅ Abono registrado`);
+  if (saldo(p) <= 0) setTimeout(() => irA('buscar'), 1200);
+  else abrirPerfil(codigoActual);
 }
 
-/* ════════════════════════════════
-   ELIMINAR
-════════════════════════════════ */
+/* ══ REGISTRAR PRÉSTAMO ══ */
+async function registrar() {
+  const fecha  = document.getElementById('reg-fecha').value;
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const deuda  = Number(document.getElementById('reg-deuda').value);
+  if (!fecha||!nombre||!deuda) { toast('⚠️ Completa todos los campos','warn'); return; }
+  const codigo = generarCodigo(nombre);
+  personas.push({ fecha, nombre, codigo, deuda, abonos:[] });
+  await guardar();
+  actualizarResumen();
+  document.getElementById('reg-nombre').value = '';
+  document.getElementById('reg-deuda').value  = '';
+  toast(`✅ ${nombre} registrado`);
+}
+
+/* ══ REGISTRAR ABONO (tab) ══ */
+async function abonar() {
+  const fecha  = document.getElementById('abo-fecha').value || hoy();
+  const nombre = document.getElementById('abo-nombre').value.trim().toLowerCase();
+  const valor  = Number(document.getElementById('abo-valor').value);
+  if (!nombre||!valor) { toast('⚠️ Ingresa nombre y valor','warn'); return; }
+  const p = personas.find(x => x.nombre.toLowerCase().includes(nombre) && saldo(x) > 0);
+  if (!p) { toast('❌ Deudor no encontrado','err'); return; }
+  p.abonos.push({ fecha, valor });
+  await guardar();
+  actualizarResumen();
+  document.getElementById('abo-valor').value  = '';
+  document.getElementById('abo-nombre').value = '';
+  toast(saldo(p) <= 0 ? `🎉 ¡${p.nombre} pagó todo!` : `✅ Abono a ${p.nombre}`);
+}
+
+/* ══ ELIMINAR ══ */
 async function eliminar(codigo) {
   const p = personas.find(x => x.codigo === codigo);
   if (!confirm(`¿Eliminar a ${p.nombre}?`)) return;
   personas = personas.filter(x => x.codigo !== codigo);
   await guardar();
   actualizarResumen();
-  toast('🗑️ Eliminado', 'err');
-  const b = document.getElementById('busqueda').value;
-  buscar(b);
+  toast('🗑️ Eliminado','err');
+  irA('buscar');
+  document.getElementById('busqueda').value = '';
+  buscar('');
 }
 
-/* ════════════════════════════════
-   HISTORIAL
-════════════════════════════════ */
-function verHistorial(codigo) {
-  const p   = personas.find(x => x.codigo === codigo);
-  const abo = totalAbo(p.abonos);
-  const sal = saldo(p);
-  const d   = dias(p.fecha);
+/* ══ LOCK SCREEN ══ */
+const CLAVE = '2611';
+let lockInput = '';
 
-  document.getElementById('m-titulo').textContent   = `📋 ${p.nombre}`;
-  document.getElementById('m-sub').textContent      = `Código: ${p.codigo} · Desde: ${p.fecha}`;
-  document.getElementById('m-prestado').textContent = fmt(p.deuda);
-  document.getElementById('m-abonado').textContent  = fmt(abo);
-  document.getElementById('m-saldo').textContent    = fmt(sal);
-  document.getElementById('m-dias').textContent     = `${d} días`;
+function lockTecla(n) {
+  if (lockInput.length >= 4) return;
+  lockInput += n;
+  actualizarDots();
+  if (lockInput.length === 4) {
+    setTimeout(() => verificarClave(), 120);
+  }
+}
 
-  let html = '';
-  if (!p.abonos.length) {
-    html = '<div style="text-align:center;padding:20px;color:var(--txt2);font-size:13px;">Sin abonos registrados</div>';
+function lockBorrar() {
+  lockInput = lockInput.slice(0, -1);
+  actualizarDots();
+  document.getElementById('lock-error').classList.remove('show');
+}
+
+function actualizarDots(error = false) {
+  for (let i = 0; i < 4; i++) {
+    const d = document.getElementById(`ld${i}`);
+    d.className = 'lock-dot';
+    if (error) d.classList.add('error');
+    else if (i < lockInput.length) d.classList.add('lleno');
+  }
+}
+
+function verificarClave() {
+  if (lockInput === CLAVE) {
+    document.getElementById('lock-screen').classList.add('oculto');
+    setTimeout(() => document.getElementById('lock-screen').style.display = 'none', 450);
   } else {
-    [...p.abonos].reverse().forEach((a, i) => {
-      html += `<div class="abono-row">
-        <div>
-          <div class="abono-num">Abono #${p.abonos.length - i}</div>
-          <div class="abono-fecha">${a.fecha}</div>
-        </div>
-        <div class="abono-val">${fmt(a.valor)}</div>
-      </div>`;
-    });
+    actualizarDots(true);
+    document.getElementById('lock-error').classList.add('show');
+    setTimeout(() => {
+      lockInput = '';
+      actualizarDots();
+    }, 700);
   }
-  document.getElementById('m-abonos').innerHTML = html;
-  document.getElementById('modal').classList.add('open');
 }
 
-function cerrarModal(e) {
-  if (!e || e.target === document.getElementById('modal'))
-    document.getElementById('modal').classList.remove('open');
-}
-
-/* ════════════════════════════════
-   BUSCAR
-════════════════════════════════ */
-function buscar(filtro) {
-  const cont = document.getElementById('resultado-busqueda');
-  const q = filtro.trim().toLowerCase();
-
-  if (!q) { cont.innerHTML = ''; return; }
-
-  const lista = personas.filter(p =>
-    saldo(p) > 0 &&
-    (p.nombre.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q))
-  );
-
-  if (!lista.length) {
-    cont.innerHTML = `<div class="estado-vacio" style="padding-top:16px;">
-      <p>Sin resultados para "<strong>${filtro}</strong>"</p>
-      <small>Verifica el código o nombre</small>
-    </div>`;
-    return;
-  }
-
-  cont.innerHTML = '<div style="margin-top:12px;">' + lista.map((p, i) => {
-    const abo = totalAbo(p.abonos);
-    const sal = saldo(p);
-    const pct = Math.min(100, Math.round((abo / p.deuda) * 100));
-    const d   = dias(p.fecha);
-    const urg = urgencia(d);
-
-    return `<div class="deudor-card ${urg.cls}" style="animation-delay:${i*0.06}s">
-      <div class="d-top">
-        <div>
-          <div class="d-nombre">${p.nombre}</div>
-          <div class="d-meta">Código: ${p.codigo} · 📅 ${p.fecha}</div>
-        </div>
-        <span class="badge-dias ${urg.bdg}">${urg.txt}</span>
-      </div>
-      <div class="d-montos">
-        <div class="d-monto"><span class="d-monto-val col-negro">${fmt(p.deuda)}</span><span class="d-monto-lbl">Prestado</span></div>
-        <div class="d-monto"><span class="d-monto-val col-rojo">${fmt(abo)}</span><span class="d-monto-lbl">Abonado</span></div>
-        <div class="d-monto"><span class="d-monto-val col-verde">${fmt(sal)}</span><span class="d-monto-lbl">Saldo</span></div>
-      </div>
-      <div class="d-barra">
-        <div class="d-barra-track"><div class="d-barra-fill" style="width:${pct}%"></div></div>
-        <div class="d-barra-pct">${pct}% pagado</div>
-      </div>
-      <div class="d-acciones">
-        <button class="btn-sm btn-sm-azul" onclick="verHistorial('${p.codigo}')">📋 Ver historial</button>
-        <button class="btn-sm btn-sm-rojo" onclick="eliminar('${p.codigo}')">🗑️ Eliminar</button>
-      </div>
-    </div>`;
-  }).join('') + '</div>';
-}
-
-/* ── INICIO ── */
 init();
 </script>
 </body>
