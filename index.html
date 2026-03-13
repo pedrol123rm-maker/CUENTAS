@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+<title>Cuentas Pendientes</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f4f8;
+padding:20px;
+}
+
+h1{
+text-align:center;
+}
+
+.container{
+background:white;
+padding:20px;
+border-radius:10px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+max-width:1000px;
+margin:auto;
+}
+
+input{
+padding:8px;
+margin:5px;
+}
+
+button{
+padding:8px 15px;
+background:#2e86de;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1b4f72;
+}
+
+table{
+width:100%;
+margin-top:20px;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:10px;
+text-align:center;
+}
+
+th{
+background:#2e86de;
+color:white;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Cuentas Pendientes</h1>
+
+<div class="container">
+
+<h3>Registrar Persona</h3>
+
+<input type="date" id="fecha">
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="codigo" placeholder="Código (2 dígitos)">
+<input type="number" id="deuda" placeholder="Valor prestado">
+
+<button onclick="agregar()">Registrar</button>
+
+<h3>Registrar Abono</h3>
+
+<input type="text" id="codigoAbono" placeholder="Código persona">
+<input type="number" id="abono" placeholder="Valor abono">
+
+<button onclick="abonar()">Agregar Abono</button>
+
+<table>
+
+<thead>
+<tr>
+<th>Fecha</th>
+<th>Persona</th>
+<th>Deuda</th>
+<th>Abonado</th>
+<th>Saldo</th>
+<th>Días desde préstamo</th>
+</tr>
+</thead>
+
+<tbody id="tabla"></tbody>
+
+</table>
+
+<br>
+
+<button onclick="exportar()">Guardar respaldo</button>
+<input type="file" onchange="importar(event)">
+
+</div>
+
+<script>
+
+let datos = JSON.parse(localStorage.getItem("cuentas")) || [];
+
+function guardar(){
+localStorage.setItem("cuentas",JSON.stringify(datos));
+}
+
+function formato(numero){
+return numero.toLocaleString("es-CO");
+}
+
+function agregar(){
+
+let fecha=document.getElementById("fecha").value;
+let nombre=document.getElementById("nombre").value;
+let codigo=document.getElementById("codigo").value;
+let deuda=parseFloat(document.getElementById("deuda").value);
+
+datos.push({
+fecha:fecha,
+nombre:nombre,
+codigo:codigo,
+deuda:deuda,
+abonado:0
+});
+
+guardar();
+mostrar();
+
+}
+
+function abonar(){
+
+let codigo=document.getElementById("codigoAbono").value;
+let abono=parseFloat(document.getElementById("abono").value);
+
+datos.forEach(p=>{
+
+if(p.codigo==codigo){
+p.abonado+=abono;
+}
+
+});
+
+guardar();
+mostrar();
+
+}
+
+function diasPrestamo(fecha){
+
+let inicio=new Date(fecha);
+let hoy=new Date();
+
+let diferencia=(hoy-inicio)/(1000*60*60*24);
+
+return Math.floor(diferencia);
+
+}
+
+function mostrar(){
+
+let tabla=document.getElementById("tabla");
+
+tabla.innerHTML="";
+
+datos.forEach(p=>{
+
+let saldo=p.deuda-p.abonado;
+
+tabla.innerHTML+=`
+
+<tr>
+
+<td>${p.fecha}</td>
+<td>${p.nombre} (${p.codigo})</td>
+<td>$${formato(p.deuda)}</td>
+<td>$${formato(p.abonado)}</td>
+<td>$${formato(saldo)}</td>
+<td>${diasPrestamo(p.fecha)}</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function exportar(){
+
+let data=JSON.stringify(datos);
+
+let blob=new Blob([data],{type:"application/json"});
+
+let url=URL.createObjectURL(blob);
+
+let a=document.createElement("a");
+
+a.href=url;
+
+a.download="cuentas.json";
+
+a.click();
+
+}
+
+function importar(event){
+
+let archivo=event.target.files[0];
+
+let lector=new FileReader();
+
+lector.onload=function(e){
+
+datos=JSON.parse(e.target.result);
+
+guardar();
+
+mostrar();
+
+}
+
+lector.readAsText(archivo);
+
+}
+
+mostrar();
+
+</script>
+
+</body>
+</html>
