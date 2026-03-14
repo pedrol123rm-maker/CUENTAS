@@ -3,769 +3,1163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#5ba8d4">
+<meta name="theme-color" content="#1a3a5c">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Cuentas">
-<title>💰 Cuentas Pendientes</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<title>Cuentas Pendientes</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --azul:#5ba8d4;--azul2:#7ec8e3;--azul3:#3a9abc;
-  --navy:#1a3a50;--navy2:#3a6a90;
-  --fondo:#f5fbff;--fondo2:#eaf5fb;
-  --card:#ffffff;--borde:#b0d8f0;--borde2:#deeef8;
-  --txt:#1a3a50;--txt2:#90c0d8;
-  --negro:#1a1a1a;--rojo:#cc2020;--verde:#1e8a45;
-  --shadow:0 2px 12px rgba(91,168,212,0.10);
+  --pri:#1a3a5c; --pri2:#2a5a8c;
+  --acc:#3a9fd4; --acc2:#6ec6e8;
+  --bg:#f0f6fb;  --bg2:#e4eef7;
+  --card:#fff;   --borde:#c8dff0; --borde2:#dceefa;
+  --txt:#0f2840; --txt2:#6a90b0;
+  --verde:#0e7c45; --verde2:#12a85c;
+  --rojo:#c0202a;  --rojo2:#e83040;
+  --naranja:#c05800;
+  --s1:0 2px 8px rgba(26,58,92,.09);
+  --s2:0 4px 20px rgba(26,58,92,.14);
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--fondo);color:var(--txt);display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:calc(64px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--txt);
+  display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100vh;
+  padding-bottom:calc(70px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+input,button{font-family:inherit}
+button{cursor:pointer;border:none;background:none}
 
-.hdr{background:linear-gradient(135deg,var(--azul),var(--azul2));padding:max(env(safe-area-inset-top),14px) 16px 14px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(91,168,212,0.3);}
-.hdr-titulo{font-size:17px;font-weight:900;color:#fff;letter-spacing:-0.3px;}
-.hdr-right{display:flex;align-items:center;gap:8px;}
-.hdr-num{font-size:22px;font-weight:900;color:#fff;}
-.hdr-sync{font-size:10px;font-weight:700;background:rgba(255,255,255,0.22);color:#fff;padding:4px 10px;border-radius:20px;border:1px solid rgba(255,255,255,0.3);}
+/* ══ LOCK ══ */
+#lock{position:fixed;inset:0;z-index:9999;
+  background:linear-gradient(170deg,#081828 0%,#1a3a5c 50%,#0a2038 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;
+  transition:opacity .4s ease,transform .4s ease}
+#lock.fuera{opacity:0;transform:scale(1.07);pointer-events:none}
+.lk-logo{font-size:60px;margin-bottom:8px;filter:drop-shadow(0 0 24px rgba(110,198,232,.55))}
+.lk-title{font-size:22px;font-weight:900;color:#fff;letter-spacing:-.5px}
+.lk-sub{font-size:12px;color:rgba(255,255,255,.38);margin-top:5px;margin-bottom:40px}
+.lk-dots{display:flex;gap:18px;margin-bottom:38px}
+.lk-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.1);
+  border:2px solid rgba(255,255,255,.25);transition:background .15s,transform .15s,border-color .15s}
+.lk-dot.on{background:#fff;border-color:#fff;transform:scale(1.18)}
+.lk-dot.err{background:#ff3a4a;border-color:#ff3a4a;animation:shake .4s ease}
+.lk-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;width:100%;max-width:270px}
+.lk-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:18px 0;font-size:26px;font-weight:700;color:#fff;
+  text-align:center;user-select:none;transition:background .1s,transform .1s}
+.lk-btn:active{background:rgba(255,255,255,.22);transform:scale(.91)}
+.lk-btn.del{font-size:20px}.lk-btn.gap{visibility:hidden}
+.lk-err{font-size:12px;color:#ff8899;font-weight:700;margin-top:20px;min-height:16px;opacity:0;transition:opacity .2s}
+.lk-err.show{opacity:1}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
-.page{display:none;flex:1;flex-direction:column;animation:fadeIn 0.2s ease;}
-.page.activa{display:flex;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
-.scroll{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;}
-.card{background:var(--card);border-radius:16px;border:0.5px solid var(--borde);padding:14px;box-shadow:var(--shadow);}
+/* ══ HEADER ══ */
+#hdr{background:linear-gradient(135deg,var(--pri),var(--pri2));
+  padding:max(env(safe-area-inset-top),14px) 16px 14px;
+  display:flex;justify-content:space-between;align-items:center;
+  position:sticky;top:0;z-index:200;box-shadow:0 3px 20px rgba(8,24,40,.32)}
+.hdr-l{flex:1;min-width:0}
+.hdr-title{font-size:17px;font-weight:900;color:#fff;letter-spacing:-.3px;overflow:hidden}
+.hdr-date{font-size:10px;color:rgba(255,255,255,.38);margin-top:2px}
+.hdr-pill{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);
+  border-radius:24px;padding:7px 16px;display:flex;flex-direction:column;align-items:center;
+  flex-shrink:0;margin-left:12px}
+.hdr-n{font-size:22px;font-weight:900;color:#fff;line-height:1}
+.hdr-nlbl{font-size:8px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
 
-.busqueda{width:100%;background:var(--card);border:1.5px solid var(--borde);border-radius:13px;padding:13px 16px;font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;color:var(--txt);outline:none;transition:border-color 0.2s,box-shadow 0.2s;box-shadow:var(--shadow);}
-.busqueda:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(91,168,212,0.15);}
-.busqueda::placeholder{color:var(--txt2);}
+/* ══ PÁGINAS ══ */
+.page{display:none;flex:1;flex-direction:column;animation:fadeUp .2s ease}
+.page.on{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
+  -webkit-overflow-scrolling:touch}
 
-.deudor-item{background:var(--card);border-radius:14px;border:0.5px solid var(--borde);border-left:4px solid var(--borde);padding:12px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:transform 0.1s;box-shadow:var(--shadow);animation:fadeIn 0.2s ease both;}
-.deudor-item:active{transform:scale(0.98);}
-.urg-ok{border-left-color:#7ec8e3;}.urg-med{border-left-color:#f0c040;}.urg-alta{border-left-color:#e08030;}.urg-crit{border-left-color:#cc2020;}
-.avatar{width:42px;height:42px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;color:#fff;flex-shrink:0;border:2px solid var(--borde);}
-.item-info{flex:1;min-width:0;}
-.item-nombre{font-size:14px;font-weight:800;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.item-meta{font-size:10px;color:var(--txt2);margin-top:2px;}
-.item-saldo{font-size:12px;font-weight:800;color:var(--verde);margin-top:2px;}
-.badge-dias{font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
-.b-ok{background:#eaf5fb;color:var(--azul3);}.b-med{background:#fef8e0;color:#c08000;}.b-alta{background:#fff3e0;color:#c05000;}.b-crit{background:#fce8e8;color:#b02020;}
+/* ══ CARD ══ */
+.card{background:var(--card);border-radius:16px;border:1px solid var(--borde);padding:15px 16px;box-shadow:var(--s1)}
+.card-title{font-size:13px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:7px;margin-bottom:13px}
+.tag{font-size:9px;font-weight:800;padding:3px 9px;border-radius:20px;text-transform:uppercase;letter-spacing:.3px}
+.tag-az{background:rgba(58,159,212,.13);color:var(--acc)}
+.tag-gn{background:rgba(14,124,69,.11);color:var(--verde)}
+.tag-pagado{background:#e6f9ef;color:#0a6030;font-size:10px;padding:4px 10px}
 
-.perfil-hdr{background:linear-gradient(135deg,var(--navy),var(--navy2));border-radius:16px;overflow:hidden;box-shadow:0 4px 20px rgba(26,58,80,0.25);}
-.perfil-hdr-top{padding:16px 16px 28px;display:flex;align-items:flex-start;gap:12px;}
-.perfil-avatar{width:52px;height:52px;border-radius:50%;background:var(--azul);border:3px solid rgba(255,255,255,0.4);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;flex-shrink:0;}
-.perfil-info{flex:1;}
-.perfil-nombre{font-size:17px;font-weight:900;color:#fff;}
-.perfil-fecha{font-size:10px;color:rgba(255,255,255,0.55);margin-top:4px;}
-.perfil-pill{font-size:10px;font-weight:800;padding:4px 10px;border-radius:20px;background:#fce8e8;color:#b02020;flex-shrink:0;}
+/* ══ CAMPO ══ */
+.campo{margin-bottom:12px}
+.campo label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;
+  letter-spacing:.5px;display:block;margin-bottom:5px}
+.campo input{width:100%;background:var(--bg);border:1.5px solid var(--borde);
+  border-radius:11px;padding:12px 14px;font-size:15px;color:var(--txt);outline:none;
+  transition:border-color .2s,box-shadow .2s,background .2s}
+.campo input:focus{background:var(--card);border-color:var(--acc);box-shadow:0 0 0 3px rgba(58,159,212,.13)}
+.campo input::placeholder{color:#c0d4e4}
+.campo input.gn:focus{border-color:var(--verde);box-shadow:0 0 0 3px rgba(14,124,69,.11)}
 
-.metricas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:-18px 12px 0;position:relative;z-index:2;}
-.met{background:var(--card);border-radius:12px;border:0.5px solid var(--borde);padding:10px 6px;text-align:center;box-shadow:0 4px 16px rgba(91,168,212,0.15);}
-.met-val{font-size:12px;font-weight:900;display:block;}
-.met-lbl{font-size:8px;color:var(--txt2);display:block;margin-top:2px;text-transform:uppercase;letter-spacing:0.3px;}
+/* ══ BOTONES ══ */
+.btn{width:100%;padding:14px;border-radius:13px;font-size:14px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;gap:8px;min-height:50px;
+  transition:transform .1s;border:none}
+.btn:active{transform:scale(.974)}
+.btn-az{background:linear-gradient(135deg,var(--acc),var(--acc2));color:#fff;box-shadow:0 5px 18px rgba(58,159,212,.36)}
+.btn-gn{background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff;box-shadow:0 5px 18px rgba(14,124,69,.3)}
+.btn-dk{background:var(--bg2);color:var(--txt);border:1px solid var(--borde)}
+.btn-rj{background:linear-gradient(135deg,var(--rojo),var(--rojo2));color:#fff;box-shadow:0 5px 18px rgba(192,32,42,.28)}
 
-.prog-wrap{margin-top:18px;}
-.prog-top{display:flex;justify-content:space-between;margin-bottom:5px;}
-.prog-lbl{font-size:10px;font-weight:700;color:var(--txt2);}
-.prog-pct{font-size:10px;font-weight:900;color:var(--azul);}
-.prog-track{background:var(--fondo2);border-radius:99px;height:6px;overflow:hidden;border:0.5px solid var(--borde);}
-.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--azul),var(--azul2));transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
+/* ══ BUSCAR ══ */
+.inp-buscar{width:100%;background:var(--card);border:1.5px solid var(--borde);
+  border-radius:13px;padding:13px 16px;font-size:16px;color:var(--txt);
+  outline:none;box-shadow:var(--s1);transition:border-color .2s,box-shadow .2s}
+.inp-buscar:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(58,159,212,.13)}
+.inp-buscar::placeholder{color:var(--txt2)}
 
-.hist-titulo{font-size:12px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:6px;margin-bottom:8px;}
-.abono-row{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--fondo2);border-radius:11px;margin-bottom:6px;border:0.5px solid var(--borde);}
-.abo-izq{flex:1;}
-.abo-num{font-size:11px;font-weight:700;color:var(--txt);}
-.abo-fecha{font-size:9px;color:var(--txt2);}
-.abo-der{display:flex;align-items:center;gap:8px;}
-.abo-val{font-size:13px;font-weight:800;color:var(--verde);}
-.btn-edit-ico{background:none;border:none;font-size:14px;cursor:pointer;padding:4px;border-radius:6px;transition:background 0.15s;}
-.btn-edit-ico:active{background:var(--borde);}
-.sin-abonos{text-align:center;padding:16px;color:var(--txt2);font-size:12px;background:var(--fondo2);border-radius:11px;border:0.5px dashed var(--borde);}
+/* ══ ITEM DEUDOR ══ */
+.ditem{background:var(--card);border-radius:14px;border:1px solid var(--borde);
+  border-left:4px solid var(--acc);
+  display:flex;align-items:center;gap:0;
+  box-shadow:var(--s1);animation:fadeUp .18s ease both;overflow:hidden}
+.u-ok{border-left-color:var(--acc)}
+.u-med{border-left-color:#dba820}
+.u-alta{border-left-color:#d06820}
+.u-crit{border-left-color:var(--rojo2)}
+.u-paid{border-left-color:var(--verde)!important}
+.ditem-tap{display:flex;align-items:center;gap:10px;flex:1;min-width:0;
+  padding:12px 12px 12px 14px;cursor:pointer}
+.ditem-tap:active{background:rgba(58,159,212,.04)}
+.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:900;color:#fff;flex-shrink:0;
+  border:2.5px solid rgba(255,255,255,.45);box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.ditem-info{flex:1;min-width:0}
+.ditem-nombre{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ditem-meta{font-size:10px;color:var(--txt2);margin-top:2px}
+.ditem-saldo{font-size:12px;font-weight:800;color:var(--verde);margin-top:3px}
+.ditem-saldo.pagado{color:var(--verde);font-weight:900}
+.dias-badge{font-size:10px;font-weight:800;padding:4px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.b-ok{background:#daf0fa;color:#1565a0}
+.b-med{background:#fef4cc;color:#7a5400}
+.b-alta{background:#ffede0;color:#883600}
+.b-crit{background:#fde8ea;color:#8a0010}
+.b-paid{background:#e6f9ef;color:#0a6030}
+/* Botón eliminar en item */
+.ditem-del{flex-shrink:0;width:48px;align-self:stretch;display:flex;align-items:center;
+  justify-content:center;background:#fdeaec;border-left:1px solid #f5c6cb;
+  color:var(--rojo);font-size:18px;transition:background .1s}
+.ditem-del:active{background:#fcd0d5}
 
-.form-abono-perfil{background:#f0faf5;border-radius:14px;border:1px solid #b8e8cc;padding:14px;}
-.form-abono-titulo{font-size:12px;font-weight:800;color:#1a7a3a;margin-bottom:10px;display:flex;align-items:center;gap:5px;}
-.campo{margin-bottom:10px;}
-.campo label{font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:4px;}
-.campo input{width:100%;background:var(--card);border:1.5px solid var(--borde);border-radius:11px;padding:12px 14px;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;color:var(--txt);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
-.campo input:focus{border-color:var(--verde);box-shadow:0 0 0 3px rgba(30,138,69,0.12);}
-.campo input::placeholder{color:var(--borde);}
-.campo input.azul:focus{border-color:var(--azul);box-shadow:0 0 0 3px rgba(91,168,212,0.15);}
+/* ══ PERFIL ══ */
+.pf-head{background:linear-gradient(145deg,var(--pri),var(--pri2));border-radius:16px;
+  padding:16px;box-shadow:var(--s2);position:relative;overflow:hidden}
+.pf-head::after{content:'';position:absolute;top:-45px;right:-45px;width:140px;height:140px;
+  background:radial-gradient(circle,rgba(110,198,232,.18),transparent 70%);border-radius:50%;pointer-events:none}
+.pf-top{display:flex;align-items:flex-start;gap:12px;padding-bottom:22px}
+.pf-av{width:56px;height:56px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:900;color:#fff;
+  border:3px solid rgba(255,255,255,.32);box-shadow:0 4px 18px rgba(0,0,0,.22)}
+.pf-info{flex:1;min-width:0}
+.pf-nombre{font-size:18px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pf-meta{font-size:10px;color:rgba(255,255,255,.45);margin-top:3px}
+.pf-badge{font-size:10px;font-weight:800;padding:5px 12px;border-radius:20px;flex-shrink:0}
+.metricas{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:-18px 10px 0;position:relative;z-index:2}
+.met{background:var(--card);border-radius:13px;border:1px solid var(--borde);
+  padding:11px 6px;text-align:center;box-shadow:var(--s2)}
+.met-val{font-size:12px;font-weight:900;display:block}
+.met-lbl{font-size:8px;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;display:block;margin-top:3px}
+/* Barra progreso */
+.prog{margin-top:13px}
+.prog-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.prog-lbl{font-size:10px;font-weight:700;color:var(--txt2)}
+.prog-pct{font-size:10px;font-weight:900;color:var(--acc)}
+.prog-track{height:7px;background:var(--bg2);border-radius:99px;overflow:hidden;border:1px solid var(--borde)}
+.prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));
+  transition:width .75s cubic-bezier(.34,1.4,.64,1)}
+.prog-fill.completo{background:linear-gradient(90deg,var(--verde),var(--verde2))}
+/* Historial */
+.hist-empty{text-align:center;padding:16px;color:var(--txt2);font-size:12px;
+  background:var(--bg);border-radius:10px;border:1px dashed var(--borde)}
+.abo-row{display:flex;align-items:center;gap:8px;padding:10px 12px;
+  background:var(--bg);border-radius:11px;border:1px solid var(--borde2);margin-bottom:6px}
+.abo-ico{width:30px;height:30px;border-radius:50%;background:var(--bg2);
+  border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;
+  font-size:13px;flex-shrink:0}
+.abo-info{flex:1}
+.abo-num{font-size:11px;font-weight:700;color:var(--txt)}
+.abo-date{font-size:9px;color:var(--txt2)}
+.abo-val{font-size:13px;font-weight:900;color:var(--verde)}
+.abo-btn{background:none;border:1px solid #f0c8c8;border-radius:8px;
+  padding:5px 9px;color:var(--rojo);font-size:13px;transition:background .1s}
+.abo-btn:active{background:#fce8ea}
+/* Form abono en perfil */
+.form-abo{background:#ecf9f2;border:1px solid #aaddc0;border-radius:13px;padding:14px}
+.form-abo-title{font-size:12px;font-weight:800;color:#0a6030;margin-bottom:12px}
+/* Banner pagado en perfil */
+.pf-paid-banner{background:linear-gradient(135deg,#0e7c45,#12a85c);border-radius:13px;
+  padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(14,124,69,.25)}
+.pf-paid-ico{font-size:32px}
+.pf-paid-txt{flex:1}
+.pf-paid-title{font-size:15px;font-weight:900;color:#fff}
+.pf-paid-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
+/* Btn eliminar perfil */
+.btn-del-pf{width:100%;padding:13px;border-radius:12px;border:1px solid #f0c0c4;
+  background:#fdeaec;color:#9a1020;font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .1s}
+.btn-del-pf:active{transform:scale(.97)}
+/* Btn volver */
+.btn-back{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:7px 13px;
+  color:#fff;font-size:13px;font-weight:700}
+.btn-back:active{background:rgba(255,255,255,.24)}
 
-.btn{width:100%;padding:14px;border-radius:13px;border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:transform 0.12s;min-height:50px;}
-.btn:active{transform:scale(0.97);}
-.btn-azul{background:linear-gradient(135deg,var(--azul),var(--azul2));color:#fff;box-shadow:0 4px 14px rgba(91,168,212,0.4);}
-.btn-verde{background:linear-gradient(135deg,var(--verde),#2ecc71);color:#fff;box-shadow:0 4px 14px rgba(30,138,69,0.3);}
-.btn-naranja{background:linear-gradient(135deg,#e08030,#f0a050);color:#fff;box-shadow:0 4px 14px rgba(224,128,48,0.35);}
+/* ══ RESUMEN HERO ══ */
+.res-hero{background:linear-gradient(145deg,var(--pri),var(--pri2));border-radius:16px;
+  padding:18px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--s2)}
+.res-hero::before{content:'';position:absolute;bottom:-35px;right:-35px;width:130px;height:130px;
+  background:radial-gradient(circle,rgba(110,198,232,.16),transparent 70%);border-radius:50%;pointer-events:none}
+.res-lbl{font-size:9px;font-weight:700;opacity:.5;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.res-big{font-size:32px;font-weight:900;letter-spacing:-1.5px;line-height:1}
+.res-sub{font-size:10px;opacity:.48;margin-top:4px;margin-bottom:16px}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.res-cell{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);
+  border-radius:11px;padding:10px;text-align:center}
+.res-cv{font-size:13px;font-weight:900;display:block;color:#fff}
+.res-cl{font-size:8px;opacity:.5;display:block;margin-top:2px}
+.res-bar-w{background:rgba(255,255,255,.14);border-radius:99px;height:5px;overflow:hidden;margin-top:15px}
+.res-bar-f{height:100%;border-radius:99px;background:rgba(255,255,255,.7);
+  transition:width .75s cubic-bezier(.34,1.4,.64,1)}
+.res-bar-l{display:flex;justify-content:space-between;font-size:8px;margin-top:4px;opacity:.5}
+.res-bar-l span:last-child{font-weight:900;opacity:1}
+/* Semanas */
+.semana-wrap{background:var(--card);border-radius:14px;border:1px solid var(--borde);
+  overflow:hidden;box-shadow:var(--s1)}
+.semana-head{background:linear-gradient(135deg,var(--pri),var(--pri2));padding:12px 15px}
+.semana-head-title{font-size:12px;font-weight:800;color:#fff}
+.semana-head-sub{font-size:9px;color:rgba(255,255,255,.5);margin-top:2px}
+.semana-row{display:flex;align-items:center;padding:11px 14px;border-bottom:1px solid var(--borde2);gap:10px}
+.semana-row:last-child{border-bottom:none}
+.semana-row.actual{background:rgba(58,159,212,.05)}
+.semana-ico{font-size:20px;flex-shrink:0}
+.semana-info{flex:1}
+.semana-range{font-size:11px;font-weight:700;color:var(--txt)}
+.semana-desc{font-size:9px;color:var(--txt2);margin-top:1px}
+.semana-val{font-size:14px;font-weight:900;color:var(--verde)}
+.semana-tag{font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;
+  background:#e6f9ef;color:var(--verde);flex-shrink:0;margin-left:4px}
 
-.colapsa-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;min-height:44px;}
-.colapsa-titulo{font-size:14px;font-weight:800;color:var(--txt);display:flex;align-items:center;gap:8px;}
-.ctag{font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;}
-.ctag-azul{background:rgba(91,168,212,0.15);color:var(--azul3);}
-.ctag-verde{background:#e8f8ee;color:#1a7a3a;}
-.colapsa-flecha{width:30px;height:30px;background:var(--fondo2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--azul3);border:1px solid var(--borde);transition:transform 0.3s,background 0.2s;flex-shrink:0;}
-.colapsa-flecha.abierto{transform:rotate(180deg);background:var(--azul3);color:#fff;}
-.colapsa-cuerpo{overflow:hidden;max-height:0;transition:max-height 0.4s ease,opacity 0.3s,margin-top 0.3s;opacity:0;margin-top:0;}
-.colapsa-cuerpo.abierto{max-height:800px;opacity:1;margin-top:12px;}
+/* ══ NAV ══ */
+#nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--borde);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:6px 0 max(env(safe-area-inset-bottom),8px);z-index:300;
+  box-shadow:0 -4px 24px rgba(26,58,92,.1)}
+.nav-it{display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:5px 2px;cursor:pointer;transition:transform .1s;position:relative}
+.nav-it:active{transform:scale(.89)}
+.nav-ico{font-size:22px;line-height:1}
+.nav-lbl{font-size:9px;font-weight:700;color:var(--txt2);transition:color .15s}
+.nav-it.on .nav-lbl{color:var(--acc)}
+.nav-dot{position:absolute;top:0;width:5px;height:5px;border-radius:50%;
+  background:var(--acc);display:none}
+.nav-it.on .nav-dot{display:block}
 
-.resumen-total{background:linear-gradient(135deg,var(--azul),var(--azul2));border-radius:13px;padding:14px;color:#fff;position:relative;overflow:hidden;}
-.resumen-total::after{content:'';position:absolute;top:-30px;right:-30px;width:100px;height:100px;background:radial-gradient(circle,rgba(255,255,255,0.12),transparent 70%);border-radius:50%;pointer-events:none;}
-.res-label{font-size:9px;font-weight:700;opacity:0.65;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
-.res-grande{font-size:26px;font-weight:900;letter-spacing:-1px;line-height:1;}
-.res-sub{font-size:10px;opacity:0.6;margin-top:2px;margin-bottom:12px;}
-.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.res-item{background:rgba(255,255,255,0.15);border-radius:10px;padding:8px;text-align:center;border:1px solid rgba(255,255,255,0.18);}
-.res-item-val{font-size:12px;font-weight:800;display:block;color:#fff;}
-.res-item-lbl{font-size:8px;opacity:0.6;display:block;margin-top:1px;}
-.barra-wrap{background:rgba(255,255,255,0.18);border-radius:99px;height:5px;overflow:hidden;margin-top:10px;}
-.barra-fill{height:100%;border-radius:99px;background:rgba(255,255,255,0.75);transition:width 0.7s cubic-bezier(0.34,1.56,0.64,1);}
-.barra-labels{display:flex;justify-content:space-between;font-size:8px;margin-top:3px;opacity:0.65;}
-.barra-labels span:last-child{font-weight:800;opacity:1;}
+.btn-rj{background:linear-gradient(135deg,var(--rojo),var(--rojo2));color:#fff;box-shadow:0 5px 18px rgba(192,32,42,.28)}
 
-.divider{display:flex;align-items:center;gap:8px;color:var(--txt2);font-size:10px;font-weight:600;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--borde2);}
+/* ══ MODAL CONFIRMAR ══ */
+.modal-bg{position:fixed;inset:0;z-index:500;background:rgba(8,18,32,.55);
+  backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal-bg.on{display:flex}
+.modal-box{background:var(--card);width:100%;max-width:480px;border-radius:22px 22px 0 0;
+  padding:20px 16px;padding-bottom:max(env(safe-area-inset-bottom),26px);
+  border-top:3px solid var(--acc);animation:slideUp .28s cubic-bezier(.34,1.4,.64,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-size:15px;font-weight:800;color:var(--acc);margin-bottom:14px}
 
-.btn-eliminar-perfil{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:12px;border-radius:12px;border:1px solid #f0c8c8;background:#fce8e8;color:#b03030;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:transform 0.12s;}
-.btn-eliminar-perfil:active{transform:scale(0.97);}
+/* ══ TOAST ══ */
+#toast{position:fixed;bottom:max(calc(74px + env(safe-area-inset-bottom)),90px);
+  left:50%;transform:translateX(-50%) translateY(18px);
+  padding:11px 24px;border-radius:30px;font-size:13px;font-weight:800;
+  opacity:0;pointer-events:none;white-space:nowrap;
+  transition:opacity .28s,transform .28s;z-index:9000;
+  box-shadow:0 6px 24px rgba(0,0,0,.18)}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.ok{background:linear-gradient(135deg,#0e7c45,#12a85c);color:#fff}
+#toast.err{background:linear-gradient(135deg,#c0202a,#e83040);color:#fff}
+#toast.warn{background:linear-gradient(135deg,#c05800,#e88020);color:#fff}
 
-/* EDIT INLINE */
-.edit-deuda-wrap{background:#fff8e0;border:1px solid #f0d080;border-radius:12px;padding:12px;margin-bottom:8px;}
-.edit-titulo{font-size:11px;font-weight:800;color:#c08000;margin-bottom:8px;}
-
-/* MODAL EDITAR ABONO */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;z-index:1000;backdrop-filter:blur(4px);}
-.modal-overlay.open{display:flex;}
-.modal{background:#fff;border-radius:22px 22px 0 0;padding:20px 16px max(env(safe-area-inset-bottom,20px),30px);width:100%;max-width:480px;border-top:3px solid var(--azul);animation:slideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
-.modal-titulo{font-size:16px;font-weight:800;color:var(--azul3);margin-bottom:14px;}
-.btn-cerrar{width:100%;margin-top:8px;padding:13px;background:var(--fondo2);border:0.5px solid var(--borde);border-radius:12px;color:var(--txt);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
-
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--card);border-top:1px solid var(--borde);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 0 max(env(safe-area-inset-bottom),8px);z-index:100;box-shadow:0 -4px 20px rgba(91,168,212,0.1);}
-.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;padding:4px 2px;cursor:pointer;transition:transform 0.1s;}
-.nav-item:active{transform:scale(0.92);}
-.nav-ico{font-size:20px;line-height:1;}
-.nav-lbl{font-size:9px;font-weight:700;color:var(--txt2);}
-.nav-item.act .nav-lbl{color:var(--azul);}
-.nav-dot{width:4px;height:4px;background:var(--azul);border-radius:50%;margin-bottom:1px;}
-
-.toast{position:fixed;bottom:max(calc(64px + env(safe-area-inset-bottom)),80px);left:50%;transform:translateX(-50%) translateY(20px);padding:11px 22px;border-radius:30px;font-weight:800;font-size:13px;opacity:0;transition:all 0.3s;z-index:9999;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-.t-ok{background:linear-gradient(135deg,#1e8a45,#2ecc71);color:#fff;}
-.t-err{background:linear-gradient(135deg,#cc2020,#ff5050);color:#fff;}
-.t-warn{background:linear-gradient(135deg,#c08000,#f0c040);color:#fff;}
-
-.vacio{text-align:center;padding:30px 16px;color:var(--txt2);}
-.vacio-ico{font-size:40px;display:block;margin-bottom:8px;}
-.vacio p{font-size:13px;line-height:1.5;}
-.vacio small{font-size:11px;color:var(--borde);display:block;margin-top:3px;}
-
-/* ── LOCK SCREEN ── */
-.lock-screen{position:fixed;inset:0;z-index:9999;background:linear-gradient(160deg,var(--navy) 0%,#0d2235 60%,#1a3a50 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;transition:opacity 0.4s,transform 0.4s;}
-.lock-screen.oculto{opacity:0;transform:scale(1.04);pointer-events:none;}
-.lock-logo{font-size:52px;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(91,168,212,0.4));}
-.lock-titulo{font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:4px;}
-.lock-sub{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:36px;}
-.lock-dots{display:flex;gap:14px;margin-bottom:32px;}
-.lock-dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,0.15);border:2px solid rgba(255,255,255,0.3);transition:background 0.15s,transform 0.15s;}
-.lock-dot.lleno{background:#fff;border-color:#fff;transform:scale(1.1);}
-.lock-dot.error{background:#ff5050;border-color:#ff5050;animation:shake 0.4s ease;}
-.lock-teclado{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;width:100%;max-width:280px;}
-.lock-key{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:16px;padding:18px 0;font-family:'Plus Jakarta Sans',sans-serif;font-size:22px;font-weight:700;color:#fff;cursor:pointer;text-align:center;transition:background 0.1s,transform 0.1s;-webkit-tap-highlight-color:transparent;user-select:none;}
-.lock-key:active{background:rgba(255,255,255,0.22);transform:scale(0.94);}
-.lock-key.borrar{font-size:16px;}
-.lock-key.vacio{visibility:hidden;}
-.lock-error-msg{font-size:12px;color:#ff7070;margin-top:16px;font-weight:700;opacity:0;transition:opacity 0.3s;min-height:18px;}
-.lock-error-msg.show{opacity:1;}
-@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+/* ══ VACÍO ══ */
+.vacio{text-align:center;padding:38px 20px;color:var(--txt2)}
+.vacio-ico{font-size:46px;display:block;margin-bottom:12px}
+.vacio p{font-size:13px;line-height:1.65}
+.vacio small{font-size:11px;color:var(--borde);display:block;margin-top:5px}
+.div-sep{display:flex;align-items:center;gap:9px;color:var(--txt2);font-size:10px;
+  font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.div-sep::before,.div-sep::after{content:'';flex:1;height:1px;background:var(--borde2)}
 </style>
 </head>
 <body>
 
-<!-- LOCK SCREEN -->
-<div class="lock-screen" id="lock-screen">
-  <div class="lock-logo">💰</div>
-  <div class="lock-titulo">Cuentas Pendientes</div>
-  <div class="lock-sub">Ingresa tu clave para continuar</div>
-  <div class="lock-dots" id="lock-dots">
-    <div class="lock-dot" id="ld0"></div>
-    <div class="lock-dot" id="ld1"></div>
-    <div class="lock-dot" id="ld2"></div>
-    <div class="lock-dot" id="ld3"></div>
+<!-- ══════════ LOCK ══════════ -->
+<div id="lock">
+  <div class="lk-logo">💰</div>
+  <div class="lk-title">Cuentas Pendientes</div>
+  <div class="lk-sub">Ingresa tu clave de acceso</div>
+  <div class="lk-dots">
+    <div class="lk-dot" id="d0"></div>
+    <div class="lk-dot" id="d1"></div>
+    <div class="lk-dot" id="d2"></div>
+    <div class="lk-dot" id="d3"></div>
   </div>
-  <div class="lock-teclado">
-    <div class="lock-key" onclick="lockTecla('1')">1</div>
-    <div class="lock-key" onclick="lockTecla('2')">2</div>
-    <div class="lock-key" onclick="lockTecla('3')">3</div>
-    <div class="lock-key" onclick="lockTecla('4')">4</div>
-    <div class="lock-key" onclick="lockTecla('5')">5</div>
-    <div class="lock-key" onclick="lockTecla('6')">6</div>
-    <div class="lock-key" onclick="lockTecla('7')">7</div>
-    <div class="lock-key" onclick="lockTecla('8')">8</div>
-    <div class="lock-key" onclick="lockTecla('9')">9</div>
-    <div class="lock-key vacio"></div>
-    <div class="lock-key" onclick="lockTecla('0')">0</div>
-    <div class="lock-key borrar" onclick="lockBorrar()">⌫</div>
+  <div class="lk-pad">
+    <div class="lk-btn" onclick="lkN('1')">1</div>
+    <div class="lk-btn" onclick="lkN('2')">2</div>
+    <div class="lk-btn" onclick="lkN('3')">3</div>
+    <div class="lk-btn" onclick="lkN('4')">4</div>
+    <div class="lk-btn" onclick="lkN('5')">5</div>
+    <div class="lk-btn" onclick="lkN('6')">6</div>
+    <div class="lk-btn" onclick="lkN('7')">7</div>
+    <div class="lk-btn" onclick="lkN('8')">8</div>
+    <div class="lk-btn" onclick="lkN('9')">9</div>
+    <div class="lk-btn gap"></div>
+    <div class="lk-btn" onclick="lkN('0')">0</div>
+    <div class="lk-btn del" onclick="lkDel()">⌫</div>
   </div>
-  <div class="lock-error-msg" id="lock-error">Clave incorrecta, intenta de nuevo</div>
+  <div class="lk-err" id="lk-err">Clave incorrecta</div>
 </div>
 
-<div class="hdr">
-  <div><div class="hdr-titulo">💰 Cuentas Pendientes</div></div>
-  <div class="hdr-right">
-    <div class="hdr-num" id="hdr-num">0</div>
+<!-- ══════════ HEADER ══════════ -->
+<header id="hdr">
+  <div class="hdr-l">
+    <div class="hdr-title" id="hdr-title">💰 Cuentas Pendientes</div>
+    <div class="hdr-date"  id="hdr-date"></div>
   </div>
-</div>
+  <div class="hdr-pill">
+    <div class="hdr-n" id="hdr-n">0</div>
+    <div class="hdr-nlbl">activos</div>
+  </div>
+</header>
 
-<!-- BUSCAR -->
-<div class="page activa" id="pg-buscar">
+<!-- ══════════ TAB: BUSCAR ══════════ -->
+<div class="page on" id="pg-buscar">
   <div class="scroll">
-    <input class="busqueda" id="busqueda" placeholder="🔍  Buscar por nombre..." oninput="buscar(this.value)" autocomplete="off">
-    <div id="lista-busqueda">
+    <input class="inp-buscar" id="inp-buscar" type="search"
+      placeholder="🔍  Buscar por nombre..."
+      autocomplete="off" oninput="buscar(this.value)">
+    <div id="res-buscar">
       <div class="vacio">
         <span class="vacio-ico">🔍</span>
-        <p>Escribe para buscar un deudor</p>
-        <small>Solo aparecen deudores con saldo pendiente</small>
+        <p>Escribe el nombre del deudor</p>
+        <small>Muestra todos — pendientes y pagados</small>
       </div>
     </div>
   </div>
 </div>
 
-<!-- PERFIL -->
+<!-- ══════════ TAB: PERFIL ══════════ -->
 <div class="page" id="pg-perfil">
   <div class="scroll">
-    <div class="perfil-hdr">
-      <div class="perfil-hdr-top">
-        <div class="perfil-avatar" id="pf-avatar">?</div>
-        <div class="perfil-info">
-          <div class="perfil-nombre" id="pf-nombre">—</div>
-          <div class="perfil-fecha" id="pf-fecha">📅 —</div>
+
+    <div class="pf-head">
+      <div class="pf-top">
+        <div class="pf-av" id="pf-av"></div>
+        <div class="pf-info">
+          <div class="pf-nombre" id="pf-nombre">—</div>
+          <div class="pf-meta"   id="pf-meta">—</div>
         </div>
-        <span class="perfil-pill badge-dias" id="pf-pill">—</span>
+        <span class="pf-badge dias-badge" id="pf-badge">—</span>
       </div>
     </div>
 
     <div class="metricas">
-      <div class="met"><span class="met-val" id="pf-prestado" style="color:var(--negro);">$0</span><span class="met-lbl">Prestado</span></div>
-      <div class="met"><span class="met-val" id="pf-abonado"  style="color:var(--rojo);">$0</span><span class="met-lbl">Abonado</span></div>
-      <div class="met"><span class="met-val" id="pf-saldo"    style="color:var(--verde);">$0</span><span class="met-lbl">Saldo</span></div>
+      <div class="met"><span class="met-val" id="pf-pre" style="color:#111827">$0</span><span class="met-lbl">Prestado</span></div>
+      <div class="met"><span class="met-val" id="pf-abo" style="color:var(--rojo)">$0</span><span class="met-lbl">Abonado</span></div>
+      <div class="met"><span class="met-val" id="pf-sal" style="color:var(--verde)">$0</span><span class="met-lbl">Saldo</span></div>
     </div>
 
-    <!-- Progreso -->
-    <div class="card" style="margin-top:10px;">
-      <div class="prog-wrap">
+    <div class="card" style="margin-top:10px">
+      <div class="prog">
         <div class="prog-top">
           <span class="prog-lbl">Progreso de pago</span>
           <span class="prog-pct" id="pf-pct">0%</span>
         </div>
-        <div class="prog-track"><div class="prog-fill" id="pf-barra" style="width:0%"></div></div>
+        <div class="prog-track"><div class="prog-fill" id="pf-bar" style="width:0%"></div></div>
       </div>
     </div>
 
-    <!-- Editar deuda -->
-    <div class="card" id="pf-edit-deuda-card">
-      <div class="colapsa-header" onclick="toggleColapsa('body-edit-deuda','flecha-edit-deuda')">
-        <div class="colapsa-titulo">✏️ Editar deuda <span class="ctag ctag-azul">Modificar</span></div>
-        <div class="colapsa-flecha" id="flecha-edit-deuda">▾</div>
+    <!-- Banner pagado (se muestra solo si saldo = 0) -->
+    <div class="pf-paid-banner" id="pf-paid-banner" style="display:none">
+      <div class="pf-paid-ico">✅</div>
+      <div class="pf-paid-txt">
+        <div class="pf-paid-title">¡Deuda pagada!</div>
+        <div class="pf-paid-sub">Esta persona está paz y salvo</div>
       </div>
-      <div class="colapsa-cuerpo" id="body-edit-deuda">
-        <div class="campo">
-          <label>Nuevo valor de la deuda</label>
-          <input type="number" id="edit-deuda-val" class="azul" placeholder="0" inputmode="numeric">
-        </div>
-        <button class="btn btn-naranja" onclick="editarDeuda()">💾 Guardar cambio</button>
-      </div>
+      <span class="tag tag-pagado">PAGADO</span>
     </div>
 
-    <!-- Historial -->
     <div class="card">
-      <div class="hist-titulo">📋 Historial de abonos</div>
-      <div id="pf-historial"></div>
+      <div class="card-title">📋 Historial de abonos</div>
+      <div id="pf-hist"></div>
     </div>
 
-    <!-- Form abono -->
-    <div class="form-abono-perfil">
-      <div class="form-abono-titulo">💵 Registrar nuevo abono</div>
-      <div class="campo"><label>Fecha del abono</label><input type="date" id="pf-abo-fecha"></div>
-      <div class="campo"><label>Valor del abono</label><input type="number" id="pf-abo-valor" placeholder="0" inputmode="numeric"></div>
-      <button class="btn btn-verde" onclick="abonarPerfil()">💰 Registrar abono</button>
+    <!-- Form abono (se oculta si ya pagó) -->
+    <div class="form-abo" id="pf-form-abo">
+      <div class="form-abo-title">💵 Registrar abono</div>
+      <div class="campo"><label>Fecha del abono</label><input type="date" id="pf-fecha" class="gn"></div>
+      <div class="campo"><label>Valor del abono</label><input type="number" id="pf-valor" placeholder="0" inputmode="numeric" class="gn"></div>
+      <button class="btn btn-gn" onclick="abonarPerfil()">💰 Registrar abono</button>
     </div>
 
-    <button class="btn-eliminar-perfil" id="pf-btn-eliminar">🗑️ Eliminar deudor</button>
-    <div style="height:4px;"></div>
+    <button class="btn-del-pf" id="pf-btn-del">🗑️ Eliminar este deudor</button>
+    <div style="height:6px"></div>
   </div>
 </div>
 
-<!-- RESUMEN -->
+<!-- ══════════ TAB: REGISTRAR ══════════ -->
+<div class="page" id="pg-registrar">
+  <div class="scroll">
+    <div class="card">
+      <div class="card-title">👤 Registrar préstamo <span class="tag tag-az">Nuevo</span></div>
+      <div class="campo"><label>Fecha del préstamo</label><input type="date" id="r-fecha"></div>
+      <div class="campo"><label>Nombre completo</label><input type="text" id="r-nombre" placeholder="Ej: Juan Pérez" autocomplete="off"></div>
+      <div class="campo"><label>Valor prestado</label><input type="number" id="r-valor" placeholder="0" inputmode="numeric"></div>
+      <button class="btn btn-az" onclick="registrar()">✅ Registrar préstamo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB: DEUDORES ══════════ -->
+<div class="page" id="pg-deudores">
+  <div class="scroll" id="lista-scroll">
+    <div id="lista-deudores"></div>
+  </div>
+</div>
+
+<!-- ══════════ TAB: RESUMEN ══════════ -->
 <div class="page" id="pg-resumen">
   <div class="scroll">
-    <div class="card">
-      <div class="colapsa-header" onclick="toggleColapsa('body-resumen','flecha-resumen')">
-        <div class="colapsa-titulo">📊 Resumen general <span class="ctag ctag-azul">Solo pendientes</span></div>
-        <div class="colapsa-flecha" id="flecha-resumen">▾</div>
+    <div class="res-hero">
+      <div class="res-lbl">Total pendiente por cobrar</div>
+      <div class="res-big" id="rs-pend">$0</div>
+      <div class="res-sub" id="rs-sub">0 deudores activos</div>
+      <div class="res-grid">
+        <div class="res-cell"><span class="res-cv" id="rs-pre">$0</span><span class="res-cl">💳 Total prestado</span></div>
+        <div class="res-cell"><span class="res-cv" id="rs-abo">$0</span><span class="res-cl">✅ Total abonado</span></div>
       </div>
-      <div class="colapsa-cuerpo" id="body-resumen">
-        <div class="resumen-total">
-          <div class="res-label">Total pendiente por cobrar</div>
-          <div class="res-grande" id="res-pendiente">$0</div>
-          <div class="res-sub" id="res-sub-txt">0 deudores activos</div>
-          <div class="res-grid">
-            <div class="res-item"><span class="res-item-val" id="res-prestado">$0</span><span class="res-item-lbl">💳 Total prestado</span></div>
-            <div class="res-item"><span class="res-item-val" id="res-abonado">$0</span><span class="res-item-lbl">✅ Total abonado</span></div>
-          </div>
-          <div class="barra-wrap"><div class="barra-fill" id="barra-fill" style="width:0%"></div></div>
-          <div class="barra-labels"><span>Recuperación</span><span id="barra-pct">0%</span></div>
-        </div>
+      <div class="res-bar-w"><div class="res-bar-f" id="rs-bar" style="width:0%"></div></div>
+      <div class="res-bar-l"><span>Recuperación</span><span id="rs-pct">0%</span></div>
+    </div>
+
+    <div class="div-sep">Ingresos semanales de abonos</div>
+
+    <div class="semana-wrap">
+      <div class="semana-head">
+        <div class="semana-head-title">📅 Historial semanal</div>
+        <div class="semana-head-sub">Dinero recibido en abonos por semana</div>
       </div>
+      <div id="semanas"></div>
     </div>
   </div>
 </div>
 
-<!-- PRÉSTAMO -->
-<div class="page" id="pg-prestamo">
-  <div class="scroll">
-    <div class="card">
-      <div class="colapsa-header" onclick="toggleColapsa('body-prestamo','flecha-prestamo')">
-        <div class="colapsa-titulo">👤 Registrar préstamo <span class="ctag ctag-azul">Nuevo</span></div>
-        <div class="colapsa-flecha" id="flecha-prestamo">▾</div>
-      </div>
-      <div class="colapsa-cuerpo" id="body-prestamo">
-        <div class="campo"><label>Fecha del préstamo</label><input type="date" id="reg-fecha"></div>
-        <div class="campo"><label>Nombre completo</label><input type="text" id="reg-nombre" class="azul" placeholder="Ej: Juan Pérez"></div>
-        <div class="campo"><label>Valor prestado</label><input type="number" id="reg-deuda" class="azul" placeholder="0" inputmode="numeric"></div>
-        <button class="btn btn-azul" onclick="registrar()">✅ Registrar préstamo</button>
-      </div>
+<!-- ══════════ MODAL EDITAR ABONO ══════════ -->
+<div class="modal-bg" id="modal-abo" onclick="cerrarModal(event)">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Editar abono</div>
+    <div class="campo"><label>Fecha</label><input type="date" id="m-fecha"></div>
+    <div class="campo"><label>Valor</label><input type="number" id="m-valor" placeholder="0" inputmode="numeric"></div>
+    <button class="btn btn-az" style="margin-bottom:8px" onclick="guardarAbono()">💾 Guardar cambio</button>
+    <button class="btn btn-dk" onclick="cerrarModal()">Cancelar</button>
+  </div>
+</div>
+
+<!-- ══════════ MODAL CONFIRMAR ══════════ -->
+<div class="modal-bg" id="modal-confirm">
+  <div class="modal-box">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px;margin-bottom:8px">🗑️</div>
+      <div class="modal-title" style="color:var(--rojo);text-align:center" id="mc-titulo">¿Eliminar?</div>
+      <div style="font-size:13px;color:var(--txt2);margin-top:4px" id="mc-sub">Esta acción no se puede deshacer.</div>
     </div>
+    <button class="btn btn-rj" style="margin-bottom:8px" id="mc-btn-si">🗑️ Sí, eliminar</button>
+    <button class="btn btn-dk" id="mc-btn-no">Cancelar</button>
   </div>
 </div>
 
-<!-- ABONO -->
-<div class="page" id="pg-abono">
-  <div class="scroll">
-    <div class="card">
-      <div class="colapsa-header" onclick="toggleColapsa('body-abono','flecha-abono')">
-        <div class="colapsa-titulo">💵 Registrar abono <span class="ctag ctag-verde">Pago</span></div>
-        <div class="colapsa-flecha" id="flecha-abono">▾</div>
-      </div>
-      <div class="colapsa-cuerpo" id="body-abono">
-        <div class="campo"><label>Fecha del abono</label><input type="date" id="abo-fecha"></div>
-        <div class="campo"><label>Nombre del deudor</label><input type="text" id="abo-nombre" placeholder="Escribe el nombre" class="azul"></div>
-        <div class="campo"><label>Valor del abono</label><input type="number" id="abo-valor" placeholder="0" inputmode="numeric"></div>
-        <button class="btn btn-verde" onclick="abonar()">💰 Registrar abono</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL EDITAR ABONO -->
-<div class="modal-overlay" id="modal-edit-abono" onclick="cerrarModalEdit(event)">
-  <div class="modal">
-    <div class="modal-titulo">✏️ Editar abono</div>
-    <div class="campo"><label>Fecha</label><input type="date" id="edit-abo-fecha"></div>
-    <div class="campo"><label>Valor</label><input type="number" id="edit-abo-valor" placeholder="0" inputmode="numeric"></div>
-    <button class="btn btn-naranja" onclick="guardarEditAbono()">💾 Guardar cambio</button>
-    <button class="btn-cerrar" onclick="cerrarModalEdit()">✕ Cancelar</button>
-  </div>
-</div>
-
-<!-- ══ PÁGINA: LISTA TODOS DEUDORES ══ -->
-<div class="page" id="pg-lista">
-  <div class="scroll">
-    <div id="lista-todos"></div>
-  </div>
-</div>
-
-<nav class="nav">
-  <div class="nav-item act" id="nav-buscar" onclick="irA('buscar')">
+<!-- ══════════ NAV ══════════ -->
+<nav id="nav">
+  <div class="nav-it on" id="nav-buscar" onclick="irA('buscar')">
     <div class="nav-dot"></div><span class="nav-ico">🔍</span><span class="nav-lbl">Buscar</span>
   </div>
-  <div class="nav-item" id="nav-prestamo" onclick="irA('prestamo')">
-    <span class="nav-ico">👤</span><span class="nav-lbl">Registrar</span>
+  <div class="nav-it" id="nav-registrar" onclick="irA('registrar')">
+    <div class="nav-dot"></div><span class="nav-ico">👤</span><span class="nav-lbl">Registrar</span>
   </div>
-  <div class="nav-item" id="nav-lista" onclick="irA('lista')">
-    <span class="nav-ico">📋</span><span class="nav-lbl">Deudores</span>
+  <div class="nav-it" id="nav-deudores" onclick="irA('deudores')">
+    <div class="nav-dot"></div><span class="nav-ico">📋</span><span class="nav-lbl">Deudores</span>
   </div>
-  <div class="nav-item" id="nav-resumen" onclick="irA('resumen')">
-    <span class="nav-ico">📊</span><span class="nav-lbl">Resumen</span>
+  <div class="nav-it" id="nav-resumen" onclick="irA('resumen')">
+    <div class="nav-dot"></div><span class="nav-ico">📊</span><span class="nav-lbl">Resumen</span>
   </div>
 </nav>
 
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
+<!-- ══════════ JAVASCRIPT ══════════ -->
 <script>
-const KEY = 'cuentas_pendientes_v6';
-let personas = [];
-let codigoActual = null;
-let editAbonoIdx = null;
+'use strict';
 
-/* ══ STORAGE ══ */
+/* ── Configuración ── */
+const PASS  = '2611';
+// Lee de todas las keys posibles para no perder datos
+const KEYS  = ['cuentas_v10','cuentas_v9','cuentas_v8','cuentas_pendientes_v7','cuentas_pendientes_v6','cuentas_pendientes_v5'];
+const KEY   = 'cuentas_v10';
+const TABS  = ['buscar','registrar','deudores','resumen'];
+
+/* ── Estado ── */
+let DB         = [];   // array de personas
+let tabActual  = 'buscar';
+let pfCodigo   = null;
+let editIdx    = null;
+let toastT     = null;
+
+/* ════════════════════════
+   LOCK
+════════════════════════ */
+let pin = '';
+
+function lkN(n) {
+  if (pin.length >= 4) return;
+  pin += n;
+  lkPaint();
+  if (pin.length === 4) setTimeout(lkCheck, 120);
+}
+
+function lkDel() {
+  pin = pin.slice(0, -1);
+  lkPaint();
+  document.getElementById('lk-err').classList.remove('show');
+}
+
+function lkPaint(err = false) {
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById('d' + i);
+    el.className = 'lk-dot' + (err ? ' err' : i < pin.length ? ' on' : '');
+  }
+}
+
+function lkCheck() {
+  if (pin === PASS) {
+    const el = document.getElementById('lock');
+    el.classList.add('fuera');
+    setTimeout(() => el.style.display = 'none', 450);
+  } else {
+    lkPaint(true);
+    document.getElementById('lk-err').classList.add('show');
+    setTimeout(() => { pin = ''; lkPaint(); }, 800);
+  }
+}
+
+/* ════════════════════════
+   STORAGE
+════════════════════════ */
 async function cargar() {
-  const local = localStorage.getItem(KEY);
+  // Intentar cloud
+  let cloud = null;
   try {
-    const nube = await window.storage.get(KEY);
-    if (nube && nube.value) {
-      const dn = JSON.parse(nube.value);
-      if (!local || dn.length >= JSON.parse(local).length) {
-        localStorage.setItem(KEY, nube.value);
-        return dn;
+    const r = await window.storage.get(KEY);
+    if (r?.value) cloud = JSON.parse(r.value);
+  } catch (_) {}
+
+  // Leer local — intentar la key actual y las viejas
+  let local = null;
+  for (const k of KEYS) {
+    const raw = localStorage.getItem(k);
+    if (raw) {
+      try {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && (local === null || parsed.length > local.length)) {
+          local = parsed;
+        }
+      } catch (_) {}
+    }
+  }
+
+  // Usar el que tenga más registros
+  let data = [];
+  if (cloud && local) data = cloud.length >= local.length ? cloud : local;
+  else data = cloud || local || [];
+
+  // Guardar en key actual
+  if (data.length) localStorage.setItem(KEY, JSON.stringify(data));
+  return data;
+}
+
+async function guardar() {
+  const str = JSON.stringify(DB);
+  localStorage.setItem(KEY, str);
+  try { await window.storage.set(KEY, str); } catch (_) {}
+}
+
+/* ════════════════════════
+   INIT
+════════════════════════ */
+async function init() {
+  DB = await cargar();
+  document.getElementById('hdr-date').textContent =
+    new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+  document.getElementById('r-fecha').value  = hoy();
+  document.getElementById('pf-fecha').value = hoy();
+  actualizarContador();
+}
+
+/* ════════════════════════
+   UTILIDADES
+════════════════════════ */
+function hoy()    { return new Date().toISOString().split('T')[0]; }
+function fmt(n)   { return '$' + Number(n).toLocaleString('es-CO'); }
+function dias(f) {
+  if (!f) return 0;
+  let s = String(f).trim();
+  // Formato DD/MM/YYYY → convertir a YYYY-MM-DD
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+    const [d, m, y] = s.split('/');
+    s = `${y}-${m}-${d}`;
+  }
+  // Tomar solo YYYY-MM-DD
+  s = s.substring(0, 10);
+  const ms = new Date(s + 'T00:00:00').getTime();
+  if (isNaN(ms)) return 0;
+  return Math.max(0, Math.floor((Date.now() - ms) / 86400000));
+}
+function sumaAbo(p) { return (p.abonos || []).reduce((s, a) => s + Number(a.valor), 0); }
+function saldo(p)   { return Math.max(0, Number(p.deuda) - sumaAbo(p)); }
+function pagado(p)  { return saldo(p) === 0; }
+
+function ini(nombre) {
+  const pts = nombre.trim().split(/\s+/);
+  return ((pts[0]?.[0] || '') + (pts[1]?.[0] || '')).toUpperCase() || '?';
+}
+function colorAv(nombre) {
+  const pal = ['#1a7fad','#1a8a5a','#8a3a9a','#b04a10','#1a5a9a','#8a6a10','#2a7a7a'];
+  let h = 0;
+  for (const c of nombre) h = (h * 31 + c.charCodeAt(0)) % pal.length;
+  return pal[h];
+}
+function urgencia(d, esPagado) {
+  if (esPagado) return { cls: 'u-paid', bc: 'b-paid', t: '✅ Pagado' };
+  if (d <= 7)   return { cls: 'u-ok',   bc: 'b-ok',   t: `🕐 ${d}d` };
+  if (d <= 20)  return { cls: 'u-med',  bc: 'b-med',  t: `⚠️ ${d}d` };
+  if (d <= 40)  return { cls: 'u-alta', bc: 'b-alta', t: `🔥 ${d}d` };
+  return              { cls: 'u-crit', bc: 'b-crit', t: `💀 ${d}d` };
+}
+function codigoNuevo(nombre) {
+  const base = nombre.trim().split(/\s+/).map(x => x[0] || '').join('').toUpperCase().slice(0, 3) || 'X';
+  let i = 1;
+  while (DB.find(p => p.codigo === base + i)) i++;
+  return base + i;
+}
+function txt(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+
+/* ════════════════════════
+   TOAST
+════════════════════════ */
+function toast(msg, tipo = 'ok') {
+  clearTimeout(toastT);
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = tipo + ' on';
+  toastT = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* ════════════════════════
+   NAVEGACIÓN
+════════════════════════ */
+function irA(tab) {
+  // Salir del perfil si estaba abierto
+  document.getElementById('pg-perfil').classList.remove('on');
+  document.getElementById('hdr-title').textContent = '💰 Cuentas Pendientes';
+
+  TABS.forEach(t => {
+    document.getElementById('pg-' + t).classList.remove('on');
+    document.getElementById('nav-' + t).classList.remove('on');
+  });
+  document.getElementById('pg-' + tab).classList.add('on');
+  document.getElementById('nav-' + tab).classList.add('on');
+  tabActual = tab;
+
+  if (tab === 'deudores') renderDeudores();
+  if (tab === 'resumen')  renderResumen();
+}
+
+function volverLista() {
+  document.getElementById('pg-perfil').classList.remove('on');
+  document.getElementById('hdr-title').textContent = '💰 Cuentas Pendientes';
+  const dest = (tabActual === 'buscar' || tabActual === 'deudores') ? tabActual : 'deudores';
+  irA(dest);
+}
+
+/* ════════════════════════
+   CONTADOR HEADER
+════════════════════════ */
+function actualizarContador() {
+  txt('hdr-n', DB.filter(p => !pagado(p)).length);
+}
+
+/* ════════════════════════
+   RESUMEN
+════════════════════════ */
+function renderResumen() {
+  const activos = DB.filter(p => !pagado(p));
+  const tDeuda  = activos.reduce((s, p) => s + Number(p.deuda), 0);
+  const tAbo    = activos.reduce((s, p) => s + sumaAbo(p), 0);
+  const tPend   = activos.reduce((s, p) => s + saldo(p), 0);
+  const pct     = tDeuda > 0 ? Math.min(100, Math.round(tAbo / tDeuda * 100)) : 0;
+
+  txt('rs-pend', fmt(tPend));
+  txt('rs-sub',  activos.length + (activos.length === 1 ? ' deudor activo' : ' deudores activos'));
+  txt('rs-pre',  fmt(tDeuda));
+  txt('rs-abo',  fmt(tAbo));
+  document.getElementById('rs-bar').style.width = pct + '%';
+  txt('rs-pct', pct + '%');
+  actualizarContador();
+  renderSemanas();
+}
+
+/* ════════════════════════
+   SEMANAS
+════════════════════════ */
+function lunesDe(f) {
+  const d = new Date(f + 'T00:00:00');
+  const dw = d.getDay();
+  d.setDate(d.getDate() - (dw === 0 ? 6 : dw - 1));
+  return d.toISOString().split('T')[0];
+}
+function domingoDe(lunes) {
+  const d = new Date(lunes + 'T00:00:00');
+  d.setDate(d.getDate() + 6);
+  return d.toISOString().split('T')[0];
+}
+function fc(f) {
+  return new Date(f + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
+}
+
+function renderSemanas() {
+  const cont = document.getElementById('semanas');
+  const todos = [];
+  for (const p of DB) {
+    for (const a of (p.abonos || [])) {
+      todos.push({ fecha: a.fecha, valor: Number(a.valor), nombre: p.nombre });
+    }
+  }
+  if (!todos.length) {
+    cont.innerHTML = `<div class="vacio" style="padding:20px"><span class="vacio-ico" style="font-size:32px">📭</span><p>Sin abonos registrados aún</p></div>`;
+    return;
+  }
+  const map = {};
+  for (const a of todos) {
+    const lun = lunesDe(a.fecha);
+    if (!map[lun]) map[lun] = { total: 0, count: 0, pnames: new Set() };
+    map[lun].total += a.valor;
+    map[lun].count++;
+    map[lun].pnames.add(a.nombre);
+  }
+  const semanas = Object.entries(map).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 10);
+  const actual  = lunesDe(hoy());
+  cont.innerHTML = semanas.map(([lun, d]) => {
+    const esActual = lun === actual;
+    const dom = domingoDe(lun);
+    return `<div class="semana-row${esActual ? ' actual' : ''}">
+      <div class="semana-ico">${esActual ? '📌' : '📅'}</div>
+      <div class="semana-info">
+        <div class="semana-range">${esActual ? '<strong>Semana actual</strong> · ' : ''}${fc(lun)} — ${fc(dom)}</div>
+        <div class="semana-desc">${d.count} abono${d.count !== 1 ? 's' : ''} · ${d.pnames.size} persona${d.pnames.size !== 1 ? 's' : ''}</div>
+      </div>
+      <span class="semana-val">${fmt(d.total)}</span>
+      <span class="semana-tag">${d.count} cobro${d.count !== 1 ? 's' : ''}</span>
+    </div>`;
+  }).join('');
+}
+
+/* ════════════════════════
+   CREAR ITEM DEUDOR (DOM puro — sin riesgo de XSS o escape)
+════════════════════════ */
+function crearItem(p, i, conDel) {
+  const d   = dias(p.fecha);
+  const sal = saldo(p);
+  const esPag = pagado(p);
+  const u   = urgencia(d, esPag);
+
+  const wrap = document.createElement('div');
+  wrap.className = `ditem ${u.cls}`;
+  wrap.style.animationDelay = (i * 0.04) + 's';
+
+  // Zona tap → perfil
+  const tap = document.createElement('div');
+  tap.className = 'ditem-tap';
+  tap.onclick = () => abrirPerfil(p.codigo);
+
+  const av = document.createElement('div');
+  av.className = 'av';
+  av.style.background = colorAv(p.nombre);
+  av.textContent = ini(p.nombre);
+
+  const info = document.createElement('div');
+  info.className = 'ditem-info';
+
+  const nom = document.createElement('div');
+  nom.className = 'ditem-nombre';
+  nom.textContent = p.nombre;
+
+  const meta = document.createElement('div');
+  meta.className = 'ditem-meta';
+  meta.textContent = `📅 ${p.fecha}  ·  ${d} día${d !== 1 ? 's' : ''}`;
+
+  const salDiv = document.createElement('div');
+  if (esPag) {
+    salDiv.className = 'ditem-saldo pagado';
+    salDiv.textContent = '✅ Paz y salvo';
+  } else {
+    salDiv.className = 'ditem-saldo';
+    salDiv.textContent = `${fmt(sal)} pendiente`;
+  }
+
+  info.append(nom, meta, salDiv);
+
+  const badge = document.createElement('span');
+  badge.className = `dias-badge ${u.bc}`;
+  badge.textContent = u.t;
+
+  tap.append(av, info, badge);
+  wrap.appendChild(tap);
+
+  // Botón eliminar
+  if (conDel) {
+    const btn = document.createElement('button');
+    btn.className = 'ditem-del';
+    btn.title = 'Eliminar';
+    btn.textContent = '🗑️';
+    const cod = p.codigo; // closure segura
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      eliminarDeudor(cod);
+    };
+    wrap.appendChild(btn);
+  }
+
+  return wrap;
+}
+
+/* ════════════════════════
+   BUSCAR
+════════════════════════ */
+function buscar(q) {
+  const cont = document.getElementById('res-buscar');
+  q = q.trim().toLowerCase();
+  if (!q) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe el nombre del deudor</p><small>Muestra todos — pendientes y pagados</small></div>`;
+    return;
+  }
+  const res = DB.filter(p => p.nombre.toLowerCase().includes(q));
+  cont.innerHTML = '';
+  if (!res.length) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${q}</strong>"</p></div>`;
+    return;
+  }
+  res.forEach((p, i) => cont.appendChild(crearItem(p, i, false)));
+}
+
+/* ════════════════════════
+   LISTA DEUDORES
+════════════════════════ */
+function renderDeudores() {
+  const cont = document.getElementById('lista-deudores');
+  cont.innerHTML = '';
+
+  // Primero pendientes (por días desc), luego pagados
+  const pendientes = DB.filter(p => !pagado(p)).sort((a, b) => dias(b.fecha) - dias(a.fecha));
+  const pagados    = DB.filter(p =>  pagado(p)).sort((a, b) => dias(b.fecha) - dias(a.fecha));
+
+  if (!DB.length) {
+    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">📋</span><p>Sin registros aún</p><small>Usa "Registrar" para agregar deudores</small></div>`;
+    return;
+  }
+
+  if (pendientes.length) {
+    const sep = document.createElement('div');
+    sep.className = 'div-sep';
+    sep.textContent = `Pendientes (${pendientes.length})`;
+    cont.appendChild(sep);
+    pendientes.forEach((p, i) => cont.appendChild(crearItem(p, i, true)));
+  }
+
+  if (pagados.length) {
+    const sep = document.createElement('div');
+    sep.className = 'div-sep';
+    sep.textContent = `Pagados (${pagados.length})`;
+    cont.appendChild(sep);
+    pagados.forEach((p, i) => cont.appendChild(crearItem(p, i, true)));
+  }
+}
+
+/* ════════════════════════
+   MODAL CONFIRMAR (reemplaza confirm() nativo)
+════════════════════════ */
+function confirmar(titulo, sub, onSi) {
+  const modal = document.getElementById('modal-confirm');
+  document.getElementById('mc-titulo').textContent = titulo;
+  document.getElementById('mc-sub').textContent = sub;
+  modal.classList.add('on');
+
+  const btnSi = document.getElementById('mc-btn-si');
+  const btnNo = document.getElementById('mc-btn-no');
+
+  // Clonar para eliminar listeners viejos
+  const nuevoSi = btnSi.cloneNode(true);
+  const nuevoNo = btnNo.cloneNode(true);
+  btnSi.parentNode.replaceChild(nuevoSi, btnSi);
+  btnNo.parentNode.replaceChild(nuevoNo, btnNo);
+
+  nuevoSi.onclick = () => {
+    modal.classList.remove('on');
+    onSi();
+  };
+  nuevoNo.onclick = () => modal.classList.remove('on');
+}
+
+/* ════════════════════════
+   ELIMINAR DEUDOR
+════════════════════════ */
+function eliminarDeudor(codigo) {
+  const p = DB.find(x => x.codigo === codigo);
+  if (!p) { toast('Deudor no encontrado', 'err'); return; }
+  confirmar(
+    `¿Eliminar a ${p.nombre}?`,
+    'Esta acción no se puede deshacer.',
+    async () => {
+      DB = DB.filter(x => x.codigo !== codigo);
+      await guardar();
+      actualizarContador();
+      toast(`🗑️ ${p.nombre} eliminado`, 'err');
+      // Si estaba en perfil, volver a lista
+      if (document.getElementById('pg-perfil').classList.contains('on')) {
+        volverLista();
+      }
+      if (tabActual === 'deudores') renderDeudores();
+      else if (tabActual === 'buscar') {
+        const q = document.getElementById('inp-buscar').value;
+        if (q.trim()) buscar(q);
       }
     }
-  } catch(e) {}
-  return local ? JSON.parse(local) : [];
-}
-async function guardar() {
-  const d = JSON.stringify(personas);
-  localStorage.setItem(KEY, d);
-  try { await window.storage.set(KEY, d); setSync('☁️'); }
-  catch(e) { setSync('💾'); }
-}
-function setSync(ico) {
-  const el = document.getElementById('hdr-sync');
-  el.textContent = ico + ' Guardado';
-  setTimeout(() => el.textContent = '✅ Listo', 2000);
+  );
 }
 
-/* ══ INIT ══ */
-async function init() {
-  personas = await cargar();
-  document.getElementById('reg-fecha').value = hoy();
-  document.getElementById('abo-fecha').value = hoy();
-  document.getElementById('pf-abo-fecha').value = hoy();
-  actualizarResumen();
-}
-
-/* ══ UTILS ══ */
-function hoy() { return new Date().toISOString().split('T')[0]; }
-function fmt(n) { return '$' + Number(n).toLocaleString('es-CO'); }
-function dias(f) { return Math.max(0, Math.floor((new Date() - new Date(f)) / 86400000)); }
-function totalAbo(lista) { return (lista||[]).reduce((s,a) => s + Number(a.valor), 0); }
-function saldo(p) { return Math.max(0, p.deuda - totalAbo(p.abonos)); }
-
-// Genera código único a partir del nombre
-function generarCodigo(nombre) {
-  const partes = nombre.trim().split(' ');
-  const base = partes.map(p => p[0]||'').join('').toUpperCase().slice(0,3);
-  let n = 1;
-  while (personas.find(p => p.codigo === base + n)) n++;
-  return base + n;
-}
-
-// Fecha bonita: "Febrero 26"
-function fmtFecha(f) {
-  if (!f) return '—';
-  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-  const [y, m, d] = f.split('-').map(Number);
-  return `${meses[m-1]} ${d}`;
-}
-
-function iniciales(nombre) {
-  const p = nombre.trim().split(' ');
-  return ((p[0]?.[0]||'') + (p[1]?.[0]||'')).toUpperCase();
-}
-function colAvatar(nombre) {
-  const cols = ['#5ba8d4','#7ec8e3','#3a9abc','#1e8a45','#c08000','#e08030'];
-  let h = 0;
-  for(let c of nombre) h = (h*31 + c.charCodeAt(0)) % cols.length;
-  return cols[h];
-}
-function urgencia(d) {
-  if (d <= 7)  return { cls:'urg-ok',  bdg:'b-ok',   txt:`🕐 ${d}d` };
-  if (d <= 20) return { cls:'urg-med', bdg:'b-med',  txt:`⚠️ ${d}d` };
-  if (d <= 40) return { cls:'urg-alta',bdg:'b-alta', txt:`🔥 ${d}d` };
-  return             { cls:'urg-crit',bdg:'b-crit', txt:`💀 ${d}d` };
-}
-function toast(msg, tipo='ok') {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = `toast t-${tipo} show`;
-  setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-/* ══ NAV ══ */
-const paginas = ['buscar','resumen','prestamo','lista'];
-function irA(pg) {
-  paginas.forEach(p => {
-    document.getElementById(`pg-${p}`).classList.remove('activa');
-    document.getElementById(`nav-${p}`).classList.remove('act');
-    const dot = document.querySelector(`#nav-${p} .nav-dot`);
-    if(dot) dot.remove();
-  });
-  document.getElementById(`pg-${pg}`).classList.add('activa');
-  document.getElementById('pg-perfil').classList.remove('activa');
-  const nav = document.getElementById(`nav-${pg}`);
-  nav.classList.add('act');
-  const dot = document.createElement('div');
-  dot.className = 'nav-dot';
-  nav.insertBefore(dot, nav.firstChild);
-  actualizarResumen();
-  if(pg === 'lista') renderLista();
-}
-function toggleColapsa(idC, idF) {
-  const c = document.getElementById(idC), f = document.getElementById(idF);
-  const a = c.classList.toggle('abierto');
-  f.classList.toggle('abierto', a);
-}
-
-/* ══ LISTA TODOS DEUDORES ══ */
-function renderLista() {
-  const cont = document.getElementById('lista-todos');
-  const activos = personas.filter(p => saldo(p) > 0)
-    .sort((a,b) => dias(b.fecha) - dias(a.fecha));
-  if(!activos.length) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🎉</span><p>¡Sin deudores pendientes!</p><small>Todos han pagado</small></div>`;
-    return;
-  }
-  cont.innerHTML = activos.map((p, i) => {
-    const d = dias(p.fecha), sal = saldo(p), urg = urgencia(d);
-    const col = colAvatar(p.nombre), ini = iniciales(p.nombre).toUpperCase();
-    return `<div class="deudor-item ${urg.cls}" style="animation-delay:${i*0.04}s" onclick="abrirPerfil('${p.codigo}')">
-      <div class="avatar" style="background:${col};">${ini}</div>
-      <div class="item-info">
-        <div class="item-nombre">${p.nombre}</div>
-        <div class="item-meta">Código: ${p.codigo} · 📅 ${p.fecha}</div>
-        <div class="item-saldo">${fmt(sal)} pendiente</div>
-      </div>
-      <span class="badge-dias ${urg.bdg}">${urg.txt}</span>
-    </div>`;
-  }).join('');
-}
-
-/* ══ RESUMEN ══ */
-function actualizarResumen() {
-  const activos    = personas.filter(p => saldo(p) > 0);
-  const tDeuda     = activos.reduce((s,p) => s + p.deuda, 0);
-  const tAbonado   = activos.reduce((s,p) => s + totalAbo(p.abonos), 0);
-  const tPendiente = activos.reduce((s,p) => s + saldo(p), 0);
-  const pct = tDeuda > 0 ? Math.round((tAbonado/tDeuda)*100) : 0;
-  document.getElementById('res-pendiente').textContent = fmt(tPendiente);
-  document.getElementById('res-prestado').textContent  = fmt(tDeuda);
-  document.getElementById('res-abonado').textContent   = fmt(tAbonado);
-  document.getElementById('res-sub-txt').textContent   = `${activos.length} deudores activos`;
-  document.getElementById('barra-fill').style.width    = pct + '%';
-  document.getElementById('barra-pct').textContent     = pct + '%';
-  document.getElementById('hdr-num').textContent       = activos.length;
-}
-
-/* ══ BUSCAR ══ */
-function buscar(filtro) {
-  const cont = document.getElementById('lista-busqueda');
-  const q = filtro.trim().toLowerCase();
-  if (!q) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe para buscar un deudor</p><small>Solo aparecen deudores con saldo pendiente</small></div>`;
-    return;
-  }
-  const lista = personas.filter(p => saldo(p) > 0 && p.nombre.toLowerCase().includes(q));
-  if (!lista.length) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${filtro}</strong>"</p><small>Verifica el nombre</small></div>`;
-    return;
-  }
-  cont.innerHTML = lista.map((p, i) => {
-    const d = dias(p.fecha), sal = saldo(p), urg = urgencia(d);
-    const col = colAvatar(p.nombre), ini = iniciales(p.nombre);
-    return `<div class="deudor-item ${urg.cls}" style="animation-delay:${i*0.05}s" onclick="abrirPerfil('${p.codigo}')">
-      <div class="avatar" style="background:${col};">${ini}</div>
-      <div class="item-info">
-        <div class="item-nombre">${p.nombre}</div>
-        <div class="item-meta">📅 Desde ${fmtFecha(p.fecha)}</div>
-        <div class="item-saldo">${fmt(sal)} pendiente</div>
-      </div>
-      <span class="badge-dias ${urg.bdg}">${urg.txt}</span>
-    </div>`;
-  }).join('');
-}
-
-/* ══ PERFIL ══ */
+/* ════════════════════════
+   PERFIL
+════════════════════════ */
 function abrirPerfil(codigo) {
-  const p = personas.find(x => x.codigo === codigo);
-  if (!p) return;
-  codigoActual = codigo;
-  const d = dias(p.fecha), abo = totalAbo(p.abonos), sal = saldo(p);
-  const pct = p.deuda > 0 ? Math.min(100, Math.round((abo/p.deuda)*100)) : 0;
-  const urg = urgencia(d);
+  const p = DB.find(x => x.codigo === codigo);
+  if (!p) { toast('Deudor no encontrado', 'err'); return; }
+  pfCodigo = codigo;
 
-  paginas.forEach(pg => document.getElementById(`pg-${pg}`).classList.remove('activa'));
-  document.getElementById('pg-perfil').classList.add('activa');
+  const d    = dias(p.fecha);
+  const abo  = sumaAbo(p);
+  const sal  = saldo(p);
+  const esPag = pagado(p);
+  const pct  = Number(p.deuda) > 0 ? Math.min(100, Math.round(abo / Number(p.deuda) * 100)) : 0;
+  const u    = urgencia(d, esPag);
 
-  const col = colAvatar(p.nombre), ini = iniciales(p.nombre);
-  document.getElementById('pf-avatar').textContent = ini;
-  document.getElementById('pf-avatar').style.background = col;
-  document.getElementById('pf-nombre').textContent   = p.nombre;
-  document.getElementById('pf-fecha').textContent    = `📅 Préstamo: ${fmtFecha(p.fecha)}`;
-  document.getElementById('pf-prestado').textContent = fmt(p.deuda);
-  document.getElementById('pf-abonado').textContent  = fmt(abo);
-  document.getElementById('pf-saldo').textContent    = fmt(sal);
-  document.getElementById('pf-pct').textContent      = pct + '%';
-  document.getElementById('pf-barra').style.width    = pct + '%';
-  document.getElementById('edit-deuda-val').value    = p.deuda;
+  // Cambiar a vista perfil
+  TABS.forEach(t => document.getElementById('pg-' + t).classList.remove('on'));
+  document.getElementById('pg-perfil').classList.add('on');
 
-  const pill = document.getElementById('pf-pill');
-  pill.textContent = urg.txt;
-  pill.className   = `perfil-pill badge-dias ${urg.bdg}`;
+  // Botón volver en header
+  const btnV = document.createElement('button');
+  btnV.className = 'btn-back';
+  btnV.textContent = '← Volver';
+  btnV.onclick = volverLista;
+  const htEl = document.getElementById('hdr-title');
+  htEl.innerHTML = '';
+  htEl.appendChild(btnV);
 
-  // historial con botón editar en cada abono
-  let html = '';
-  if (!p.abonos.length) {
-    html = '<div class="sin-abonos">Sin abonos registrados aún</div>';
-  } else {
-    [...p.abonos].reverse().forEach((a, i) => {
-      const idx = p.abonos.length - 1 - i; // índice real en el array
-      html += `<div class="abono-row">
-        <div class="abo-izq">
-          <div class="abo-num">Abono #${p.abonos.length - i}</div>
-          <div class="abo-fecha">${fmtFecha(a.fecha)}</div>
-        </div>
-        <div class="abo-der">
-          <span class="abo-val">${fmt(a.valor)}</span>
-          <button class="btn-edit-ico" onclick="abrirEditAbono(${idx})" title="Editar">✏️</button>
-        </div>
-      </div>`;
-    });
-  }
-  document.getElementById('pf-historial').innerHTML = html;
-  document.getElementById('pf-abo-fecha').value = hoy();
-  document.getElementById('pf-abo-valor').value = '';
-  document.getElementById('pf-btn-eliminar').onclick = () => eliminar(codigo);
+  // Avatar
+  const avEl = document.getElementById('pf-av');
+  avEl.textContent = ini(p.nombre);
+  avEl.style.background = colorAv(p.nombre);
+
+  // Datos
+  txt('pf-nombre', p.nombre);
+  document.getElementById('pf-meta').textContent = `📅 ${p.fecha}  ·  ${d} día${d !== 1 ? 's' : ''} desde el préstamo`;
+  txt('pf-pre', fmt(p.deuda));
+  txt('pf-abo', fmt(abo));
+  txt('pf-sal', fmt(sal));
+  txt('pf-pct', pct + '%');
+
+  // Barra progreso
+  const bar = document.getElementById('pf-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'prog-fill' + (esPag ? ' completo' : '');
+
+  // Badge días
+  const badge = document.getElementById('pf-badge');
+  badge.textContent = u.t;
+  badge.className = `pf-badge dias-badge ${u.bc}`;
+
+  // Banner pagado
+  document.getElementById('pf-paid-banner').style.display = esPag ? 'flex' : 'none';
+
+  // Form abono: ocultar si ya pagó
+  document.getElementById('pf-form-abo').style.display = esPag ? 'none' : 'block';
+
+  // Historial
+  renderHist(p);
+
+  // Reset form
+  document.getElementById('pf-fecha').value = hoy();
+  document.getElementById('pf-valor').value = '';
+
+  // Botón eliminar
+  document.getElementById('pf-btn-del').onclick = () => eliminarDeudor(codigo);
+
+  // Scroll arriba
   document.getElementById('pg-perfil').querySelector('.scroll').scrollTop = 0;
 }
 
-/* ══ EDITAR DEUDA ══ */
-async function editarDeuda() {
-  const p = personas.find(x => x.codigo === codigoActual);
-  if (!p) return;
-  const nuevo = Number(document.getElementById('edit-deuda-val').value);
-  if (!nuevo || nuevo <= 0) { toast('⚠️ Ingresa un valor válido','warn'); return; }
-  p.deuda = nuevo;
-  await guardar();
-  actualizarResumen();
-  toast('✅ Deuda actualizada');
-  abrirPerfil(codigoActual);
+/* ════════════════════════
+   HISTORIAL EN PERFIL (DOM puro)
+════════════════════════ */
+function renderHist(p) {
+  const cont = document.getElementById('pf-hist');
+  cont.innerHTML = '';
+  if (!p.abonos || !p.abonos.length) {
+    cont.innerHTML = `<div class="hist-empty">Sin abonos registrados aún</div>`;
+    return;
+  }
+  // Más reciente primero
+  const rev = [...p.abonos].map((a, i) => ({ ...a, ri: i })).reverse();
+  rev.forEach((a, i) => {
+    const row = document.createElement('div');
+    row.className = 'abo-row';
+
+    const ico = document.createElement('div');
+    ico.className = 'abo-ico'; ico.textContent = '💵';
+
+    const inf = document.createElement('div');
+    inf.className = 'abo-info';
+    const n = document.createElement('div'); n.className = 'abo-num'; n.textContent = `Abono #${p.abonos.length - i}`;
+    const f = document.createElement('div'); f.className = 'abo-date'; f.textContent = a.fecha;
+    inf.append(n, f);
+
+    const val = document.createElement('span');
+    val.className = 'abo-val'; val.textContent = fmt(a.valor);
+
+    const bEdit = document.createElement('button');
+    bEdit.className = 'abo-btn'; bEdit.title = 'Editar'; bEdit.textContent = '✏️';
+    const ri = a.ri;
+    bEdit.onclick = () => abrirEditAbono(ri);
+
+    const bDel = document.createElement('button');
+    bDel.className = 'abo-btn'; bDel.title = 'Eliminar'; bDel.textContent = '🗑️';
+    bDel.onclick = () => eliminarAbono(ri);
+
+    row.append(ico, inf, val, bEdit, bDel);
+    cont.appendChild(row);
+  });
 }
 
-/* ══ EDITAR ABONO ══ */
-function abrirEditAbono(idx) {
-  const p = personas.find(x => x.codigo === codigoActual);
-  if (!p) return;
-  editAbonoIdx = idx;
-  document.getElementById('edit-abo-fecha').value = p.abonos[idx].fecha;
-  document.getElementById('edit-abo-valor').value = p.abonos[idx].valor;
-  document.getElementById('modal-edit-abono').classList.add('open');
-}
-async function guardarEditAbono() {
-  const p = personas.find(x => x.codigo === codigoActual);
-  if (!p || editAbonoIdx === null) return;
-  const fecha = document.getElementById('edit-abo-fecha').value || hoy();
-  const valor = Number(document.getElementById('edit-abo-valor').value);
-  if (!valor) { toast('⚠️ Ingresa un valor','warn'); return; }
-  p.abonos[editAbonoIdx] = { fecha, valor };
-  await guardar();
-  actualizarResumen();
-  cerrarModalEdit();
-  toast('✅ Abono actualizado');
-  abrirPerfil(codigoActual);
-}
-function cerrarModalEdit(e) {
-  if (!e || e.target === document.getElementById('modal-edit-abono'))
-    document.getElementById('modal-edit-abono').classList.remove('open');
-}
-
-/* ══ ABONAR DESDE PERFIL ══ */
+/* ════════════════════════
+   ABONAR
+════════════════════════ */
 async function abonarPerfil() {
-  const p = personas.find(x => x.codigo === codigoActual);
+  const p = DB.find(x => x.codigo === pfCodigo);
   if (!p) return;
-  const fecha = document.getElementById('pf-abo-fecha').value || hoy();
-  const valor = Number(document.getElementById('pf-abo-valor').value);
-  if (!valor) { toast('⚠️ Ingresa un valor','warn'); return; }
+  const fecha = document.getElementById('pf-fecha').value || hoy();
+  const valor = parseFloat(document.getElementById('pf-valor').value);
+  if (!valor || valor <= 0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
   p.abonos.push({ fecha, valor });
   await guardar();
-  actualizarResumen();
-  toast(saldo(p) <= 0 ? `🎉 ¡${p.nombre} pagó todo!` : `✅ Abono registrado`);
-  if (saldo(p) <= 0) setTimeout(() => irA('buscar'), 1200);
-  else abrirPerfil(codigoActual);
-}
-
-/* ══ REGISTRAR PRÉSTAMO ══ */
-async function registrar() {
-  const fecha  = document.getElementById('reg-fecha').value;
-  const nombre = document.getElementById('reg-nombre').value.trim();
-  const deuda  = Number(document.getElementById('reg-deuda').value);
-  if (!fecha||!nombre||!deuda) { toast('⚠️ Completa todos los campos','warn'); return; }
-  const codigo = generarCodigo(nombre);
-  personas.push({ fecha, nombre, codigo, deuda, abonos:[] });
-  await guardar();
-  actualizarResumen();
-  document.getElementById('reg-nombre').value = '';
-  document.getElementById('reg-deuda').value  = '';
-  toast(`✅ ${nombre} registrado`);
-}
-
-/* ══ REGISTRAR ABONO (tab) ══ */
-async function abonar() {
-  const fecha  = document.getElementById('abo-fecha').value || hoy();
-  const nombre = document.getElementById('abo-nombre').value.trim().toLowerCase();
-  const valor  = Number(document.getElementById('abo-valor').value);
-  if (!nombre||!valor) { toast('⚠️ Ingresa nombre y valor','warn'); return; }
-  const p = personas.find(x => x.nombre.toLowerCase().includes(nombre) && saldo(x) > 0);
-  if (!p) { toast('❌ Deudor no encontrado','err'); return; }
-  p.abonos.push({ fecha, valor });
-  await guardar();
-  actualizarResumen();
-  document.getElementById('abo-valor').value  = '';
-  document.getElementById('abo-nombre').value = '';
-  toast(saldo(p) <= 0 ? `🎉 ¡${p.nombre} pagó todo!` : `✅ Abono a ${p.nombre}`);
-}
-
-/* ══ ELIMINAR ══ */
-async function eliminar(codigo) {
-  const p = personas.find(x => x.codigo === codigo);
-  if (!confirm(`¿Eliminar a ${p.nombre}?`)) return;
-  personas = personas.filter(x => x.codigo !== codigo);
-  await guardar();
-  actualizarResumen();
-  toast('🗑️ Eliminado','err');
-  irA('buscar');
-  document.getElementById('busqueda').value = '';
-  buscar('');
-}
-
-/* ══ LOCK SCREEN ══ */
-const CLAVE = '2611';
-let lockInput = '';
-
-function lockTecla(n) {
-  if (lockInput.length >= 4) return;
-  lockInput += n;
-  actualizarDots();
-  if (lockInput.length === 4) {
-    setTimeout(() => verificarClave(), 120);
-  }
-}
-
-function lockBorrar() {
-  lockInput = lockInput.slice(0, -1);
-  actualizarDots();
-  document.getElementById('lock-error').classList.remove('show');
-}
-
-function actualizarDots(error = false) {
-  for (let i = 0; i < 4; i++) {
-    const d = document.getElementById(`ld${i}`);
-    d.className = 'lock-dot';
-    if (error) d.classList.add('error');
-    else if (i < lockInput.length) d.classList.add('lleno');
-  }
-}
-
-function verificarClave() {
-  if (lockInput === CLAVE) {
-    document.getElementById('lock-screen').classList.add('oculto');
-    setTimeout(() => document.getElementById('lock-screen').style.display = 'none', 450);
+  actualizarContador();
+  if (pagado(p)) {
+    toast(`🎉 ¡${p.nombre} está paz y salvo!`, 'ok');
+    setTimeout(() => abrirPerfil(pfCodigo), 600);
   } else {
-    actualizarDots(true);
-    document.getElementById('lock-error').classList.add('show');
-    setTimeout(() => {
-      lockInput = '';
-      actualizarDots();
-    }, 700);
+    toast('✅ Abono registrado', 'ok');
+    abrirPerfil(pfCodigo);
   }
 }
 
+/* ════════════════════════
+   EDITAR / ELIMINAR ABONO
+════════════════════════ */
+function abrirEditAbono(idx) {
+  const p = DB.find(x => x.codigo === pfCodigo);
+  if (!p || !p.abonos[idx]) return;
+  editIdx = idx;
+  document.getElementById('m-fecha').value = p.abonos[idx].fecha;
+  document.getElementById('m-valor').value = p.abonos[idx].valor;
+  document.getElementById('modal-abo').classList.add('on');
+}
+
+async function guardarAbono() {
+  const p = DB.find(x => x.codigo === pfCodigo);
+  if (!p || editIdx === null) return;
+  const fecha = document.getElementById('m-fecha').value || hoy();
+  const valor = parseFloat(document.getElementById('m-valor').value);
+  if (!valor || valor <= 0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
+  p.abonos[editIdx] = { fecha, valor };
+  await guardar();
+  actualizarContador();
+  cerrarModal();
+  toast('✅ Abono actualizado', 'ok');
+  abrirPerfil(pfCodigo);
+}
+
+function eliminarAbono(idx) {
+  confirmar(
+    '¿Eliminar este abono?',
+    'No se puede recuperar después.',
+    async () => {
+      const p = DB.find(x => x.codigo === pfCodigo);
+      if (!p) return;
+      p.abonos.splice(idx, 1);
+      await guardar();
+      actualizarContador();
+      toast('🗑️ Abono eliminado', 'err');
+      abrirPerfil(pfCodigo);
+    }
+  );
+}
+
+function cerrarModal(e) {
+  if (!e || e.target === document.getElementById('modal-abo')) {
+    document.getElementById('modal-abo').classList.remove('on');
+    editIdx = null;
+  }
+}
+
+/* ════════════════════════
+   REGISTRAR PRÉSTAMO
+════════════════════════ */
+async function registrar() {
+  const fecha  = document.getElementById('r-fecha').value;
+  const nombre = document.getElementById('r-nombre').value.trim();
+  const valor  = parseFloat(document.getElementById('r-valor').value);
+
+  if (!fecha)             { toast('⚠️ Ingresa la fecha', 'warn');        return; }
+  if (!nombre)            { toast('⚠️ Ingresa el nombre', 'warn');       return; }
+  if (!valor || valor<=0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
+
+  const codigo = codigoNuevo(nombre);
+  DB.push({ fecha, nombre, codigo, deuda: valor, abonos: [] });
+  await guardar();
+  actualizarContador();
+
+  // Limpiar campos
+  document.getElementById('r-nombre').value = '';
+  document.getElementById('r-valor').value  = '';
+  document.getElementById('r-fecha').value  = hoy();
+
+  toast(`✅ ${nombre} registrado`, 'ok');
+}
+
+/* ════════════════════════
+   ARRANQUE
+════════════════════════ */
 init();
 </script>
 </body>
