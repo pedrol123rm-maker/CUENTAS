@@ -24,10 +24,10 @@
   --s2:0 4px 20px rgba(26,58,92,.14);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html,body{height:100%;overflow:hidden}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--txt);
-  display:flex;flex-direction:column;max-width:480px;margin:0 auto;min-height:100vh;
-  padding-bottom:calc(70px + env(safe-area-inset-bottom));-webkit-font-smoothing:antialiased}
+  display:flex;flex-direction:column;max-width:480px;margin:0 auto;height:100vh;
+  -webkit-font-smoothing:antialiased}
 input,button{font-family:inherit}
 button{cursor:pointer;border:none;background:none}
 
@@ -59,7 +59,8 @@ button{cursor:pointer;border:none;background:none}
 #hdr{background:linear-gradient(135deg,var(--pri),var(--pri2));
   padding:max(env(safe-area-inset-top),14px) 16px 14px;
   display:flex;justify-content:space-between;align-items:center;
-  position:sticky;top:0;z-index:200;box-shadow:0 3px 20px rgba(8,24,40,.32)}
+  position:sticky;top:0;z-index:200;box-shadow:0 3px 20px rgba(8,24,40,.32);
+  flex-shrink:0}
 .hdr-l{flex:1;min-width:0}
 .hdr-title{font-size:17px;font-weight:900;color:#fff;letter-spacing:-.3px;overflow:hidden}
 .hdr-date{font-size:10px;color:rgba(255,255,255,.38);margin-top:2px}
@@ -69,12 +70,24 @@ button{cursor:pointer;border:none;background:none}
 .hdr-n{font-size:22px;font-weight:900;color:#fff;line-height:1}
 .hdr-nlbl{font-size:8px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
 
-/* ══ PÁGINAS ══ */
-.page{display:none;flex:1;flex-direction:column;animation:fadeUp .2s ease}
+/* ══ PÁGINAS — clave del fix de scroll ══ */
+.page{display:none;flex:1;flex-direction:column;animation:fadeUp .2s ease;
+  min-height:0; /* CRÍTICO: permite que el flex hijo haga scroll */}
 .page.on{display:flex}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.scroll{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;
-  -webkit-overflow-scrolling:touch}
+
+/* Contenedor principal: header + páginas + nav */
+body > header{ flex-shrink:0 }
+#app-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
+
+.scroll{
+  flex:1;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
+  padding:12px;
+  padding-bottom:calc(80px + env(safe-area-inset-bottom));
+  display:flex;flex-direction:column;gap:10px;
+}
 
 /* ══ CARD ══ */
 .card{background:var(--card);border-radius:16px;border:1px solid var(--borde);padding:15px 16px;box-shadow:var(--s1)}
@@ -104,6 +117,7 @@ button{cursor:pointer;border:none;background:none}
 .btn-gn{background:linear-gradient(135deg,var(--verde),var(--verde2));color:#fff;box-shadow:0 5px 18px rgba(14,124,69,.3)}
 .btn-dk{background:var(--bg2);color:var(--txt);border:1px solid var(--borde)}
 .btn-rj{background:linear-gradient(135deg,var(--rojo),var(--rojo2));color:#fff;box-shadow:0 5px 18px rgba(192,32,42,.28)}
+.btn-na{background:linear-gradient(135deg,#b45309,#d97706);color:#fff;box-shadow:0 5px 18px rgba(180,83,9,.3)}
 
 /* ══ BUSCAR ══ */
 .inp-buscar{width:100%;background:var(--card);border:1.5px solid var(--borde);
@@ -139,7 +153,6 @@ button{cursor:pointer;border:none;background:none}
 .b-alta{background:#ffede0;color:#883600}
 .b-crit{background:#fde8ea;color:#8a0010}
 .b-paid{background:#e6f9ef;color:#0a6030}
-/* Botón eliminar en item */
 .ditem-del{flex-shrink:0;width:48px;align-self:stretch;display:flex;align-items:center;
   justify-content:center;background:#fdeaec;border-left:1px solid #f5c6cb;
   color:var(--rojo);font-size:18px;transition:background .1s}
@@ -147,10 +160,10 @@ button{cursor:pointer;border:none;background:none}
 
 /* ══ PERFIL ══ */
 .pf-head{background:linear-gradient(145deg,var(--pri),var(--pri2));border-radius:16px;
-  padding:16px;box-shadow:var(--s2);position:relative;overflow:hidden}
+  padding:16px 16px 28px;box-shadow:var(--s2);position:relative}
 .pf-head::after{content:'';position:absolute;top:-45px;right:-45px;width:140px;height:140px;
   background:radial-gradient(circle,rgba(110,198,232,.18),transparent 70%);border-radius:50%;pointer-events:none}
-.pf-top{display:flex;align-items:flex-start;gap:12px;padding-bottom:22px}
+.pf-top{display:flex;align-items:center;gap:12px;min-height:60px;padding-bottom:14px}
 .pf-av{width:56px;height:56px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   font-size:20px;font-weight:900;color:#fff;
@@ -164,7 +177,6 @@ button{cursor:pointer;border:none;background:none}
   padding:11px 6px;text-align:center;box-shadow:var(--s2)}
 .met-val{font-size:12px;font-weight:900;display:block}
 .met-lbl{font-size:8px;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;display:block;margin-top:3px}
-/* Barra progreso */
 .prog{margin-top:13px}
 .prog-top{display:flex;justify-content:space-between;margin-bottom:5px}
 .prog-lbl{font-size:10px;font-weight:700;color:var(--txt2)}
@@ -173,7 +185,6 @@ button{cursor:pointer;border:none;background:none}
 .prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2));
   transition:width .75s cubic-bezier(.34,1.4,.64,1)}
 .prog-fill.completo{background:linear-gradient(90deg,var(--verde),var(--verde2))}
-/* Historial */
 .hist-empty{text-align:center;padding:16px;color:var(--txt2);font-size:12px;
   background:var(--bg);border-radius:10px;border:1px dashed var(--borde)}
 .abo-row{display:flex;align-items:center;gap:8px;padding:10px 12px;
@@ -188,28 +199,34 @@ button{cursor:pointer;border:none;background:none}
 .abo-btn{background:none;border:1px solid #f0c8c8;border-radius:8px;
   padding:5px 9px;color:var(--rojo);font-size:13px;transition:background .1s}
 .abo-btn:active{background:#fce8ea}
-/* Form abono en perfil */
 .form-abo{background:#ecf9f2;border:1px solid #aaddc0;border-radius:13px;padding:14px}
 .form-abo-title{font-size:12px;font-weight:800;color:#0a6030;margin-bottom:12px}
-/* Banner pagado en perfil */
 .pf-paid-banner{background:linear-gradient(135deg,#0e7c45,#12a85c);border-radius:13px;
   padding:14px 16px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 16px rgba(14,124,69,.25)}
 .pf-paid-ico{font-size:32px}
 .pf-paid-txt{flex:1}
 .pf-paid-title{font-size:15px;font-weight:900;color:#fff}
 .pf-paid-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:2px}
-/* Btn eliminar perfil */
 .btn-del-pf{width:100%;padding:13px;border-radius:12px;border:1px solid #f0c0c4;
   background:#fdeaec;color:#9a1020;font-size:14px;font-weight:700;
   display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .1s}
 .btn-del-pf:active{transform:scale(.97)}
-/* Btn volver */
 .btn-back{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);
   border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:7px 13px;
   color:#fff;font-size:13px;font-weight:700}
 .btn-back:active{background:rgba(255,255,255,.24)}
 
-/* ══ RESUMEN HERO ══ */
+/* ══ EDICIÓN INLINE ══ */
+.pf-nombre{cursor:pointer;border-bottom:1.5px dashed rgba(255,255,255,.35);padding-bottom:2px;
+  transition:border-color .2s}
+.pf-nombre:active{border-color:rgba(255,255,255,.8)}
+.pf-nombre-input{background:transparent;border:none;border-bottom:2px solid rgba(255,255,255,.9);
+  color:#fff;font-size:18px;font-weight:900;width:100%;outline:none;
+  font-family:inherit;padding-bottom:2px;letter-spacing:-.3px}
+.met-tap{cursor:pointer;transition:transform .1s,box-shadow .15s}
+.met-tap:active{transform:scale(.94);box-shadow:0 0 0 2px var(--acc)}
+
+/* ══ RESUMEN ══ */
 .res-hero{background:linear-gradient(145deg,var(--pri),var(--pri2));border-radius:16px;
   padding:18px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--s2)}
 .res-hero::before{content:'';position:absolute;bottom:-35px;right:-35px;width:130px;height:130px;
@@ -227,7 +244,6 @@ button{cursor:pointer;border:none;background:none}
   transition:width .75s cubic-bezier(.34,1.4,.64,1)}
 .res-bar-l{display:flex;justify-content:space-between;font-size:8px;margin-top:4px;opacity:.5}
 .res-bar-l span:last-child{font-weight:900;opacity:1}
-/* Semanas */
 .semana-wrap{background:var(--card);border-radius:14px;border:1px solid var(--borde);
   overflow:hidden;box-shadow:var(--s1)}
 .semana-head{background:linear-gradient(135deg,var(--pri),var(--pri2));padding:12px 15px}
@@ -243,6 +259,41 @@ button{cursor:pointer;border:none;background:none}
 .semana-val{font-size:14px;font-weight:900;color:var(--verde)}
 .semana-tag{font-size:9px;font-weight:800;padding:3px 8px;border-radius:20px;
   background:#e6f9ef;color:var(--verde);flex-shrink:0;margin-left:4px}
+
+/* ══ BACKUP CARD ══ */
+.backup-card{background:linear-gradient(135deg,#f0f9ff,#e0f2fe);border:1.5px solid #7dd3fc;border-radius:16px;padding:16px}
+.backup-title{font-size:13px;font-weight:900;color:#0369a1;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.backup-sub{font-size:11px;color:#0284c7;margin-bottom:14px;line-height:1.5}
+.backup-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.btn-export{background:linear-gradient(135deg,#0369a1,#0284c7);color:#fff;border-radius:11px;
+  padding:12px;font-size:13px;font-weight:800;display:flex;align-items:center;
+  justify-content:center;gap:6px;border:none;cursor:pointer;
+  transition:transform .1s;box-shadow:0 4px 12px rgba(3,105,161,.3)}
+.btn-export:active{transform:scale(.96)}
+.btn-import{background:#fff;color:#0369a1;border:1.5px solid #7dd3fc;border-radius:11px;
+  padding:12px;font-size:13px;font-weight:800;display:flex;align-items:center;
+  justify-content:center;gap:6px;cursor:pointer;transition:transform .1s}
+.btn-import:active{transform:scale(.96)}
+.backup-ultima{font-size:10px;color:#64748b;margin-top:10px;text-align:center}
+
+/* Alerta respaldo */
+#alerta-respaldo{position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;z-index:8000;padding:0 12px;
+  padding-top:max(env(safe-area-inset-top),64px);pointer-events:none;transition:opacity .3s}
+#alerta-respaldo.hidden{opacity:0}
+.ar-box{background:linear-gradient(135deg,#7c3a00,#c05800);border-radius:14px;
+  padding:13px 15px;display:flex;align-items:center;gap:11px;
+  box-shadow:0 6px 24px rgba(192,88,0,.4);pointer-events:all;
+  animation:bajarAlerta .4s cubic-bezier(.34,1.4,.64,1)}
+@keyframes bajarAlerta{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}
+.ar-ico{font-size:26px;flex-shrink:0}
+.ar-info{flex:1;min-width:0}
+.ar-titulo{font-size:13px;font-weight:900;color:#fff}
+.ar-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px}
+.ar-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:10px;
+  padding:8px 13px;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;flex-shrink:0}
+.ar-btn:active{background:rgba(255,255,255,.35)}
+.ar-cerrar{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;padding:2px 4px;flex-shrink:0}
 
 /* ══ NAV ══ */
 #nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
@@ -260,9 +311,7 @@ button{cursor:pointer;border:none;background:none}
   background:var(--acc);display:none}
 .nav-it.on .nav-dot{display:block}
 
-.btn-rj{background:linear-gradient(135deg,var(--rojo),var(--rojo2));color:#fff;box-shadow:0 5px 18px rgba(192,32,42,.28)}
-
-/* ══ MODAL CONFIRMAR ══ */
+/* ══ MODALES ══ */
 .modal-bg{position:fixed;inset:0;z-index:500;background:rgba(8,18,32,.55);
   backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
 .modal-bg.on{display:flex}
@@ -324,6 +373,19 @@ button{cursor:pointer;border:none;background:none}
   <div class="lk-err" id="lk-err">Clave incorrecta</div>
 </div>
 
+<!-- ALERTA RESPALDO -->
+<div id="alerta-respaldo" class="hidden">
+  <div class="ar-box">
+    <span class="ar-ico">⚠️</span>
+    <div class="ar-info">
+      <div class="ar-titulo">¡Haz tu respaldo!</div>
+      <div class="ar-sub" id="ar-sub-txt">Llevas varios días sin exportar tus datos</div>
+    </div>
+    <button class="ar-btn" onclick="exportarDatos()">💾 Exportar</button>
+    <button class="ar-cerrar" onclick="cerrarAlertaRespaldo()">✕</button>
+  </div>
+</div>
+
 <!-- ══════════ HEADER ══════════ -->
 <header id="hdr">
   <div class="hdr-l">
@@ -335,6 +397,9 @@ button{cursor:pointer;border:none;background:none}
     <div class="hdr-nlbl">activos</div>
   </div>
 </header>
+
+<!-- Wrapper principal para que el scroll funcione correctamente -->
+<div id="app-wrap">
 
 <!-- ══════════ TAB: BUSCAR ══════════ -->
 <div class="page on" id="pg-buscar">
@@ -360,15 +425,15 @@ button{cursor:pointer;border:none;background:none}
       <div class="pf-top">
         <div class="pf-av" id="pf-av"></div>
         <div class="pf-info">
-          <div class="pf-nombre" id="pf-nombre">—</div>
-          <div class="pf-meta"   id="pf-meta">—</div>
+          <div class="pf-nombre" id="pf-nombre" onclick="editarNombre()" title="Toca para editar">—</div>
+          <div class="pf-meta" id="pf-meta">—</div>
         </div>
         <span class="pf-badge dias-badge" id="pf-badge">—</span>
       </div>
     </div>
 
     <div class="metricas">
-      <div class="met"><span class="met-val" id="pf-pre" style="color:#111827">$0</span><span class="met-lbl">Prestado</span></div>
+      <div class="met met-tap" onclick="editarDeuda()" title="Toca para editar"><span class="met-val" id="pf-pre" style="color:#111827">$0</span><span class="met-lbl">Prestado ✏️</span></div>
       <div class="met"><span class="met-val" id="pf-abo" style="color:var(--rojo)">$0</span><span class="met-lbl">Abonado</span></div>
       <div class="met"><span class="met-val" id="pf-sal" style="color:var(--verde)">$0</span><span class="met-lbl">Saldo</span></div>
     </div>
@@ -383,7 +448,6 @@ button{cursor:pointer;border:none;background:none}
       </div>
     </div>
 
-    <!-- Banner pagado (se muestra solo si saldo = 0) -->
     <div class="pf-paid-banner" id="pf-paid-banner" style="display:none">
       <div class="pf-paid-ico">✅</div>
       <div class="pf-paid-txt">
@@ -398,7 +462,7 @@ button{cursor:pointer;border:none;background:none}
       <div id="pf-hist"></div>
     </div>
 
-    <!-- Form abono (se oculta si ya pagó) -->
+    <!-- FORM ABONO -->
     <div class="form-abo" id="pf-form-abo">
       <div class="form-abo-title">💵 Registrar abono</div>
       <div class="campo"><label>Fecha del abono</label><input type="date" id="pf-fecha" class="gn"></div>
@@ -426,7 +490,7 @@ button{cursor:pointer;border:none;background:none}
 
 <!-- ══════════ TAB: DEUDORES ══════════ -->
 <div class="page" id="pg-deudores">
-  <div class="scroll" id="lista-scroll">
+  <div class="scroll">
     <div id="lista-deudores"></div>
   </div>
 </div>
@@ -455,17 +519,43 @@ button{cursor:pointer;border:none;background:none}
       </div>
       <div id="semanas"></div>
     </div>
+
+    <div class="div-sep">Respaldo de datos</div>
+
+    <div class="backup-card">
+      <div class="backup-title">💾 Guardar mis datos</div>
+      <div class="backup-sub">Exporta un archivo JSON con todos tus datos. Si se borra el historial del navegador, impórtalo para recuperar todo.</div>
+      <div class="backup-grid">
+        <button class="btn-export" onclick="exportarDatos()">⬇️ Exportar</button>
+        <button class="btn-import" onclick="document.getElementById('inp-import').click()">⬆️ Importar</button>
+      </div>
+      <div class="backup-ultima" id="backup-ultima-lbl">Sin respaldo reciente</div>
+    </div>
+    <input type="file" id="inp-import" accept=".json" style="display:none" onchange="importarDatos(event)">
+
+  </div>
+</div>
+
+</div><!-- /app-wrap -->
+
+<!-- ══════════ MODAL EDITAR DEUDA ══════════ -->
+<div class="modal-bg" id="modal-deuda" onclick="cerrarModalDeuda(event)">
+  <div class="modal-box">
+    <div class="modal-title">✏️ Editar valor prestado</div>
+    <div class="campo"><label>Nuevo valor</label><input type="number" id="md-valor" placeholder="0" inputmode="numeric"></div>
+    <button class="btn btn-az" style="margin-bottom:8px" onclick="guardarDeuda()">💾 Guardar</button>
+    <button class="btn btn-dk" onclick="cerrarModalDeuda()">Cancelar</button>
   </div>
 </div>
 
 <!-- ══════════ MODAL EDITAR ABONO ══════════ -->
-<div class="modal-bg" id="modal-abo" onclick="cerrarModal(event)">
+<div class="modal-bg" id="modal-abo" onclick="cerrarModalAbo(event)">
   <div class="modal-box">
     <div class="modal-title">✏️ Editar abono</div>
     <div class="campo"><label>Fecha</label><input type="date" id="m-fecha"></div>
     <div class="campo"><label>Valor</label><input type="number" id="m-valor" placeholder="0" inputmode="numeric"></div>
     <button class="btn btn-az" style="margin-bottom:8px" onclick="guardarAbono()">💾 Guardar cambio</button>
-    <button class="btn btn-dk" onclick="cerrarModal()">Cancelar</button>
+    <button class="btn btn-dk" onclick="cerrarModalAbo()">Cancelar</button>
   </div>
 </div>
 
@@ -504,50 +594,44 @@ button{cursor:pointer;border:none;background:none}
 <script>
 'use strict';
 
-/* ── Configuración ── */
-const PASS  = '2611';
-// Lee de todas las keys posibles para no perder datos
-const KEYS  = ['cuentas_v10','cuentas_v9','cuentas_v8','cuentas_pendientes_v7','cuentas_pendientes_v6','cuentas_pendientes_v5'];
-const KEY   = 'cuentas_v10';
-const TABS  = ['buscar','registrar','deudores','resumen'];
+/* ── Config ── */
+const PASS = '2611';
+const KEYS = ['cuentas_v10','cuentas_v9','cuentas_v8','cuentas_pendientes_v7','cuentas_pendientes_v6','cuentas_pendientes_v5'];
+const KEY  = 'cuentas_v10';
+const KEY_BACKUP = 'cuentas_ultimo_backup';
+const TABS = ['buscar','registrar','deudores','resumen'];
 
 /* ── Estado ── */
-let DB         = [];   // array de personas
-let tabActual  = 'buscar';
-let pfCodigo   = null;
-let editIdx    = null;
-let toastT     = null;
+let DB        = [];
+let tabActual = 'buscar';
+let pfCodigo  = null;
+let editIdx   = null;
+let toastT    = null;
 
-/* ════════════════════════
-   LOCK
-════════════════════════ */
+/* ════════ LOCK ════════ */
 let pin = '';
-
 function lkN(n) {
   if (pin.length >= 4) return;
-  pin += n;
-  lkPaint();
+  pin += n; lkPaint();
   if (pin.length === 4) setTimeout(lkCheck, 120);
 }
-
 function lkDel() {
-  pin = pin.slice(0, -1);
-  lkPaint();
+  pin = pin.slice(0, -1); lkPaint();
   document.getElementById('lk-err').classList.remove('show');
 }
-
 function lkPaint(err = false) {
   for (let i = 0; i < 4; i++) {
     const el = document.getElementById('d' + i);
     el.className = 'lk-dot' + (err ? ' err' : i < pin.length ? ' on' : '');
   }
 }
-
 function lkCheck() {
   if (pin === PASS) {
-    const el = document.getElementById('lock');
-    el.classList.add('fuera');
-    setTimeout(() => el.style.display = 'none', 450);
+    document.getElementById('lock').classList.add('fuera');
+    setTimeout(() => {
+      document.getElementById('lock').style.display = 'none';
+      verificarAlertaRespaldo();
+    }, 450);
   } else {
     lkPaint(true);
     document.getElementById('lk-err').classList.add('show');
@@ -555,230 +639,265 @@ function lkCheck() {
   }
 }
 
-/* ════════════════════════
-   STORAGE
-════════════════════════ */
+/* ════════ STORAGE ════════ */
 async function cargar() {
-  // Intentar cloud
   let cloud = null;
-  try {
-    const r = await window.storage.get(KEY);
-    if (r?.value) cloud = JSON.parse(r.value);
-  } catch (_) {}
-
-  // Leer local — intentar la key actual y las viejas
+  try { const r = await window.storage.get(KEY); if (r?.value) cloud = JSON.parse(r.value); } catch(_){}
   let local = null;
   for (const k of KEYS) {
     const raw = localStorage.getItem(k);
-    if (raw) {
-      try {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && (local === null || parsed.length > local.length)) {
-          local = parsed;
-        }
-      } catch (_) {}
-    }
+    if (raw) try {
+      const p = JSON.parse(raw);
+      if (Array.isArray(p) && (local === null || p.length > local.length)) local = p;
+    } catch(_){}
   }
-
-  // Usar el que tenga más registros
   let data = [];
   if (cloud && local) data = cloud.length >= local.length ? cloud : local;
   else data = cloud || local || [];
-
-  // Guardar en key actual
   if (data.length) localStorage.setItem(KEY, JSON.stringify(data));
   return data;
 }
-
 async function guardar() {
   const str = JSON.stringify(DB);
   localStorage.setItem(KEY, str);
-  try { await window.storage.set(KEY, str); } catch (_) {}
+  try { await window.storage.set(KEY, str); } catch(_){}
 }
 
-/* ════════════════════════
-   INIT
-════════════════════════ */
+/* ════════ INIT ════════ */
 async function init() {
   DB = await cargar();
   document.getElementById('hdr-date').textContent =
-    new Date().toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long' });
+    new Date().toLocaleDateString('es-CO', { weekday:'long', day:'numeric', month:'long' });
   document.getElementById('r-fecha').value  = hoy();
   document.getElementById('pf-fecha').value = hoy();
   actualizarContador();
 }
 
-/* ════════════════════════
-   UTILIDADES
-════════════════════════ */
-function hoy()    { return new Date().toISOString().split('T')[0]; }
-function fmt(n)   { return '$' + Number(n).toLocaleString('es-CO'); }
+/* ════════ UTILS ════════ */
+function hoy()  { return new Date().toISOString().split('T')[0]; }
+function fmt(n) { return '$' + Number(n).toLocaleString('es-CO'); }
+
+// Fecha legible: "2025-02-25" → "Feb 25" / "Mar 8"
+function fechaLegible(f) {
+  if (!f) return '—';
+  let s = String(f).trim();
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
+    const [d, m, y] = s.split('/'); s = `${y}-${m}-${d}`;
+  }
+  s = s.substring(0, 10);
+  const dt = new Date(s + 'T00:00:00');
+  if (isNaN(dt.getTime())) return s;
+  return dt.toLocaleDateString('es-CO', { day:'numeric', month:'short' });
+}
+
 function dias(f) {
   if (!f) return 0;
   let s = String(f).trim();
-  // Formato DD/MM/YYYY → convertir a YYYY-MM-DD
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(s)) {
-    const [d, m, y] = s.split('/');
-    s = `${y}-${m}-${d}`;
+    const [d, m, y] = s.split('/'); s = `${y}-${m}-${d}`;
   }
-  // Tomar solo YYYY-MM-DD
   s = s.substring(0, 10);
   const ms = new Date(s + 'T00:00:00').getTime();
   if (isNaN(ms)) return 0;
   return Math.max(0, Math.floor((Date.now() - ms) / 86400000));
 }
-function sumaAbo(p) { return (p.abonos || []).reduce((s, a) => s + Number(a.valor), 0); }
+function sumaAbo(p) { return (p.abonos||[]).reduce((s,a) => s + Number(a.valor), 0); }
 function saldo(p)   { return Math.max(0, Number(p.deuda) - sumaAbo(p)); }
 function pagado(p)  { return saldo(p) === 0; }
-
-function ini(nombre) {
-  const pts = nombre.trim().split(/\s+/);
-  return ((pts[0]?.[0] || '') + (pts[1]?.[0] || '')).toUpperCase() || '?';
+function ini(n) {
+  const pts = n.trim().split(/\s+/);
+  return ((pts[0]?.[0]||'') + (pts[1]?.[0]||'')).toUpperCase() || '?';
 }
-function colorAv(nombre) {
+function colorAv(n) {
   const pal = ['#1a7fad','#1a8a5a','#8a3a9a','#b04a10','#1a5a9a','#8a6a10','#2a7a7a'];
-  let h = 0;
-  for (const c of nombre) h = (h * 31 + c.charCodeAt(0)) % pal.length;
+  let h = 0; for (const c of n) h = (h*31 + c.charCodeAt(0)) % pal.length;
   return pal[h];
 }
-function urgencia(d, esPagado) {
-  if (esPagado) return { cls: 'u-paid', bc: 'b-paid', t: '✅ Pagado' };
-  if (d <= 7)   return { cls: 'u-ok',   bc: 'b-ok',   t: `🕐 ${d}d` };
-  if (d <= 20)  return { cls: 'u-med',  bc: 'b-med',  t: `⚠️ ${d}d` };
-  if (d <= 40)  return { cls: 'u-alta', bc: 'b-alta', t: `🔥 ${d}d` };
-  return              { cls: 'u-crit', bc: 'b-crit', t: `💀 ${d}d` };
+function urgencia(d, esPag) {
+  if (esPag)  return { cls:'u-paid', bc:'b-paid', t:'✅ Pagado' };
+  if (d<=7)   return { cls:'u-ok',   bc:'b-ok',   t:`🕐 ${d}d` };
+  if (d<=20)  return { cls:'u-med',  bc:'b-med',  t:`⚠️ ${d}d` };
+  if (d<=40)  return { cls:'u-alta', bc:'b-alta', t:`🔥 ${d}d` };
+  return            { cls:'u-crit', bc:'b-crit', t:`💀 ${d}d` };
 }
 function codigoNuevo(nombre) {
-  const base = nombre.trim().split(/\s+/).map(x => x[0] || '').join('').toUpperCase().slice(0, 3) || 'X';
+  const base = nombre.trim().split(/\s+/).map(x=>x[0]||'').join('').toUpperCase().slice(0,3)||'X';
   let i = 1;
-  while (DB.find(p => p.codigo === base + i)) i++;
-  return base + i;
+  while (DB.find(p => p.codigo === base+i)) i++;
+  return base+i;
 }
-function txt(id, v) { const e = document.getElementById(id); if (e) e.textContent = v; }
+function txt(id, v) { const e = document.getElementById(id); if(e) e.textContent = v; }
 
-/* ════════════════════════
-   TOAST
-════════════════════════ */
-function toast(msg, tipo = 'ok') {
+/* ════════ TOAST ════════ */
+function toast(msg, tipo='ok') {
   clearTimeout(toastT);
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = tipo + ' on';
+  el.textContent = msg; el.className = tipo+' on';
   toastT = setTimeout(() => el.classList.remove('on'), 2600);
 }
 
-/* ════════════════════════
-   NAVEGACIÓN
-════════════════════════ */
-function irA(tab) {
-  // Salir del perfil si estaba abierto
-  document.getElementById('pg-perfil').classList.remove('on');
-  document.getElementById('hdr-title').textContent = '💰 Cuentas Pendientes';
-
-  TABS.forEach(t => {
-    document.getElementById('pg-' + t).classList.remove('on');
-    document.getElementById('nav-' + t).classList.remove('on');
-  });
-  document.getElementById('pg-' + tab).classList.add('on');
-  document.getElementById('nav-' + tab).classList.add('on');
-  tabActual = tab;
-
-  if (tab === 'deudores') renderDeudores();
-  if (tab === 'resumen')  renderResumen();
+/* ════════ ALERTA RESPALDO ════════ */
+function verificarAlertaRespaldo() {
+  if (!DB.length) return;
+  const ultimo = localStorage.getItem(KEY_BACKUP);
+  if (!ultimo) { mostrarAlertaRespaldo('¡Nunca has exportado tus datos!'); return; }
+  const d = dias(ultimo);
+  if (d >= 3) mostrarAlertaRespaldo(`Llevas ${d} días sin exportar tus datos`);
+}
+function mostrarAlertaRespaldo(msg) {
+  document.getElementById('ar-sub-txt').textContent = msg;
+  document.getElementById('alerta-respaldo').classList.remove('hidden');
+  setTimeout(() => cerrarAlertaRespaldo(), 8000);
+}
+function cerrarAlertaRespaldo() {
+  document.getElementById('alerta-respaldo').classList.add('hidden');
 }
 
+/* ════════ EXPORTAR ════════ */
+function exportarDatos() {
+  if (!DB.length) { toast('⚠️ No hay datos para exportar','warn'); return; }
+  const respaldo = { version:1, fecha_export:hoy(), total_deudores:DB.length, datos:DB };
+  const blob = new Blob([JSON.stringify(respaldo,null,2)], { type:'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `cuentas_respaldo_${hoy()}.json`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  localStorage.setItem(KEY_BACKUP, hoy());
+  actualizarLblBackup();
+  cerrarAlertaRespaldo();
+  toast('✅ Respaldo exportado correctamente','ok');
+}
+
+/* ════════ IMPORTAR ════════ */
+function importarDatos(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async function(e) {
+    try {
+      const json = JSON.parse(e.target.result);
+      let datos = null;
+      if (Array.isArray(json)) datos = json;
+      else if (json.datos && Array.isArray(json.datos)) datos = json.datos;
+      if (!datos) { toast('❌ Archivo inválido','err'); return; }
+      const validos = datos.every(p => p.nombre && p.codigo && p.deuda !== undefined);
+      if (!validos) { toast('❌ Formato incorrecto','err'); return; }
+      const n = datos.length;
+      const activos = datos.filter(p => saldo(p) > 0).length;
+      confirmar(
+        `¿Restaurar ${n} deudores?`,
+        `${activos} con saldo pendiente. Esto reemplaza los datos actuales.`,
+        async () => {
+          DB = datos;
+          await guardar();
+          actualizarContador();
+          toast(`✅ Restaurado: ${n} deudores cargados`,'ok');
+          irA('deudores');
+        }
+      );
+    } catch(_) { toast('❌ Error al leer el archivo','err'); }
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+function actualizarLblBackup() {
+  const el = document.getElementById('backup-ultima-lbl');
+  if (!el) return;
+  const ultimo = localStorage.getItem(KEY_BACKUP);
+  if (!ultimo) {
+    el.textContent = '⚠️ Sin respaldo guardado — ¡expórtalo ahora!';
+    el.style.color = '#c05800'; el.style.fontWeight = '700';
+  } else {
+    const d = dias(ultimo);
+    if (d === 0) { el.textContent = '✅ Último respaldo: hoy'; el.style.color = '#0e7c45'; el.style.fontWeight = '700'; }
+    else { el.textContent = `🕐 Último respaldo: hace ${d} día${d>1?'s':''}`; el.style.color = d>=3?'#c05800':'#64748b'; el.style.fontWeight = d>=3?'700':'600'; }
+  }
+}
+
+/* ════════ NAVEGACIÓN ════════ */
+function irA(tab) {
+  document.getElementById('pg-perfil').classList.remove('on');
+  document.getElementById('hdr-title').textContent = '💰 Cuentas Pendientes';
+  TABS.forEach(t => {
+    document.getElementById('pg-'+t).classList.remove('on');
+    document.getElementById('nav-'+t).classList.remove('on');
+  });
+  document.getElementById('pg-'+tab).classList.add('on');
+  document.getElementById('nav-'+tab).classList.add('on');
+  tabActual = tab;
+  if (tab==='deudores') renderDeudores();
+  if (tab==='resumen')  { renderResumen(); actualizarLblBackup(); }
+}
 function volverLista() {
   document.getElementById('pg-perfil').classList.remove('on');
   document.getElementById('hdr-title').textContent = '💰 Cuentas Pendientes';
-  const dest = (tabActual === 'buscar' || tabActual === 'deudores') ? tabActual : 'deudores';
+  const dest = (tabActual==='buscar'||tabActual==='deudores') ? tabActual : 'deudores';
   irA(dest);
 }
 
-/* ════════════════════════
-   CONTADOR HEADER
-════════════════════════ */
-function actualizarContador() {
-  txt('hdr-n', DB.filter(p => !pagado(p)).length);
-}
+/* ════════ CONTADOR ════════ */
+function actualizarContador() { txt('hdr-n', DB.filter(p=>!pagado(p)).length); }
 
-/* ════════════════════════
-   RESUMEN
-════════════════════════ */
+/* ════════ RESUMEN ════════ */
 function renderResumen() {
-  const activos = DB.filter(p => !pagado(p));
-  const tDeuda  = activos.reduce((s, p) => s + Number(p.deuda), 0);
-  const tAbo    = activos.reduce((s, p) => s + sumaAbo(p), 0);
-  const tPend   = activos.reduce((s, p) => s + saldo(p), 0);
-  const pct     = tDeuda > 0 ? Math.min(100, Math.round(tAbo / tDeuda * 100)) : 0;
-
+  const activos = DB.filter(p=>!pagado(p));
+  const tDeuda  = activos.reduce((s,p)=>s+Number(p.deuda),0);
+  const tAbo    = activos.reduce((s,p)=>s+sumaAbo(p),0);
+  const tPend   = activos.reduce((s,p)=>s+saldo(p),0);
+  const pct     = tDeuda>0 ? Math.min(100,Math.round(tAbo/tDeuda*100)) : 0;
   txt('rs-pend', fmt(tPend));
-  txt('rs-sub',  activos.length + (activos.length === 1 ? ' deudor activo' : ' deudores activos'));
-  txt('rs-pre',  fmt(tDeuda));
-  txt('rs-abo',  fmt(tAbo));
-  document.getElementById('rs-bar').style.width = pct + '%';
-  txt('rs-pct', pct + '%');
+  txt('rs-sub',  activos.length+(activos.length===1?' deudor activo':' deudores activos'));
+  txt('rs-pre',  fmt(tDeuda)); txt('rs-abo', fmt(tAbo));
+  document.getElementById('rs-bar').style.width = pct+'%';
+  txt('rs-pct', pct+'%');
   actualizarContador();
   renderSemanas();
 }
 
-/* ════════════════════════
-   SEMANAS
-════════════════════════ */
+/* ════════ SEMANAS ════════ */
 function lunesDe(f) {
-  const d = new Date(f + 'T00:00:00');
+  const d = new Date(f+'T00:00:00');
   const dw = d.getDay();
-  d.setDate(d.getDate() - (dw === 0 ? 6 : dw - 1));
+  d.setDate(d.getDate()-(dw===0?6:dw-1));
   return d.toISOString().split('T')[0];
 }
 function domingoDe(lunes) {
-  const d = new Date(lunes + 'T00:00:00');
-  d.setDate(d.getDate() + 6);
+  const d = new Date(lunes+'T00:00:00');
+  d.setDate(d.getDate()+6);
   return d.toISOString().split('T')[0];
-}
-function fc(f) {
-  return new Date(f + 'T00:00:00').toLocaleDateString('es-CO', { day: 'numeric', month: 'short' });
 }
 
 function renderSemanas() {
   const cont = document.getElementById('semanas');
   const todos = [];
-  for (const p of DB) {
-    for (const a of (p.abonos || [])) {
-      todos.push({ fecha: a.fecha, valor: Number(a.valor), nombre: p.nombre });
-    }
-  }
-  if (!todos.length) {
-    cont.innerHTML = `<div class="vacio" style="padding:20px"><span class="vacio-ico" style="font-size:32px">📭</span><p>Sin abonos registrados aún</p></div>`;
-    return;
-  }
+  for (const p of DB) for (const a of (p.abonos||[])) todos.push({fecha:a.fecha,valor:Number(a.valor),nombre:p.nombre});
+  if (!todos.length) { cont.innerHTML=`<div class="vacio" style="padding:20px"><span class="vacio-ico" style="font-size:32px">📭</span><p>Sin abonos registrados aún</p></div>`; return; }
   const map = {};
   for (const a of todos) {
     const lun = lunesDe(a.fecha);
-    if (!map[lun]) map[lun] = { total: 0, count: 0, pnames: new Set() };
-    map[lun].total += a.valor;
-    map[lun].count++;
-    map[lun].pnames.add(a.nombre);
+    if (!map[lun]) map[lun] = {total:0,count:0,pnames:new Set()};
+    map[lun].total+=a.valor; map[lun].count++; map[lun].pnames.add(a.nombre);
   }
-  const semanas = Object.entries(map).sort((a, b) => b[0].localeCompare(a[0])).slice(0, 10);
+  const semanas = Object.entries(map).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
   const actual  = lunesDe(hoy());
-  cont.innerHTML = semanas.map(([lun, d]) => {
-    const esActual = lun === actual;
+  cont.innerHTML = semanas.map(([lun,d]) => {
+    const esActual = lun===actual;
     const dom = domingoDe(lun);
-    return `<div class="semana-row${esActual ? ' actual' : ''}">
-      <div class="semana-ico">${esActual ? '📌' : '📅'}</div>
+    return `<div class="semana-row${esActual?' actual':''}">
+      <div class="semana-ico">${esActual?'📌':'📅'}</div>
       <div class="semana-info">
-        <div class="semana-range">${esActual ? '<strong>Semana actual</strong> · ' : ''}${fc(lun)} — ${fc(dom)}</div>
-        <div class="semana-desc">${d.count} abono${d.count !== 1 ? 's' : ''} · ${d.pnames.size} persona${d.pnames.size !== 1 ? 's' : ''}</div>
+        <div class="semana-range">${esActual?'<strong>Semana actual</strong> · ':''}${fechaLegible(lun)} — ${fechaLegible(dom)}</div>
+        <div class="semana-desc">${d.count} abono${d.count!==1?'s':''} · ${d.pnames.size} persona${d.pnames.size!==1?'s':''}</div>
       </div>
       <span class="semana-val">${fmt(d.total)}</span>
-      <span class="semana-tag">${d.count} cobro${d.count !== 1 ? 's' : ''}</span>
+      <span class="semana-tag">${d.count} cobro${d.count!==1?'s':''}</span>
     </div>`;
   }).join('');
 }
 
-/* ════════════════════════
-   CREAR ITEM DEUDOR (DOM puro — sin riesgo de XSS o escape)
-════════════════════════ */
+/* ════════ ITEM DEUDOR (DOM puro) ════════ */
 function crearItem(p, i, conDel) {
   const d   = dias(p.fecha);
   const sal = saldo(p);
@@ -787,379 +906,293 @@ function crearItem(p, i, conDel) {
 
   const wrap = document.createElement('div');
   wrap.className = `ditem ${u.cls}`;
-  wrap.style.animationDelay = (i * 0.04) + 's';
+  wrap.style.animationDelay = (i*0.04)+'s';
 
-  // Zona tap → perfil
   const tap = document.createElement('div');
   tap.className = 'ditem-tap';
   tap.onclick = () => abrirPerfil(p.codigo);
 
   const av = document.createElement('div');
-  av.className = 'av';
-  av.style.background = colorAv(p.nombre);
+  av.className = 'av'; av.style.background = colorAv(p.nombre);
   av.textContent = ini(p.nombre);
 
   const info = document.createElement('div');
   info.className = 'ditem-info';
 
   const nom = document.createElement('div');
-  nom.className = 'ditem-nombre';
-  nom.textContent = p.nombre;
+  nom.className = 'ditem-nombre'; nom.textContent = p.nombre;
 
   const meta = document.createElement('div');
   meta.className = 'ditem-meta';
-  meta.textContent = `📅 ${p.fecha}  ·  ${d} día${d !== 1 ? 's' : ''}`;
+  // Fecha legible + días
+  meta.textContent = `📅 ${fechaLegible(p.fecha)}  ·  ${d} día${d!==1?'s':''}`;
 
   const salDiv = document.createElement('div');
-  if (esPag) {
-    salDiv.className = 'ditem-saldo pagado';
-    salDiv.textContent = '✅ Paz y salvo';
-  } else {
-    salDiv.className = 'ditem-saldo';
-    salDiv.textContent = `${fmt(sal)} pendiente`;
-  }
+  if (esPag) { salDiv.className='ditem-saldo pagado'; salDiv.textContent='✅ Paz y salvo'; }
+  else { salDiv.className='ditem-saldo'; salDiv.textContent=`${fmt(sal)} pendiente`; }
 
   info.append(nom, meta, salDiv);
 
   const badge = document.createElement('span');
-  badge.className = `dias-badge ${u.bc}`;
-  badge.textContent = u.t;
+  badge.className = `dias-badge ${u.bc}`; badge.textContent = u.t;
 
   tap.append(av, info, badge);
   wrap.appendChild(tap);
 
-  // Botón eliminar
   if (conDel) {
     const btn = document.createElement('button');
-    btn.className = 'ditem-del';
-    btn.title = 'Eliminar';
-    btn.textContent = '🗑️';
-    const cod = p.codigo; // closure segura
-    btn.onclick = (e) => {
-      e.stopPropagation();
-      eliminarDeudor(cod);
-    };
+    btn.className='ditem-del'; btn.title='Eliminar'; btn.textContent='🗑️';
+    const cod = p.codigo;
+    btn.onclick = (e) => { e.stopPropagation(); eliminarDeudor(cod); };
     wrap.appendChild(btn);
   }
-
   return wrap;
 }
 
-/* ════════════════════════
-   BUSCAR
-════════════════════════ */
+/* ════════ BUSCAR ════════ */
 function buscar(q) {
   const cont = document.getElementById('res-buscar');
   q = q.trim().toLowerCase();
-  if (!q) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe el nombre del deudor</p><small>Muestra todos — pendientes y pagados</small></div>`;
-    return;
-  }
+  if (!q) { cont.innerHTML=`<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe el nombre del deudor</p><small>Muestra todos — pendientes y pagados</small></div>`; return; }
   const res = DB.filter(p => p.nombre.toLowerCase().includes(q));
   cont.innerHTML = '';
-  if (!res.length) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${q}</strong>"</p></div>`;
-    return;
-  }
-  res.forEach((p, i) => cont.appendChild(crearItem(p, i, false)));
+  if (!res.length) { cont.innerHTML=`<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${q}</strong>"</p></div>`; return; }
+  res.forEach((p,i) => cont.appendChild(crearItem(p,i,false)));
 }
 
-/* ════════════════════════
-   LISTA DEUDORES
-════════════════════════ */
+/* ════════ LISTA DEUDORES ════════ */
 function renderDeudores() {
   const cont = document.getElementById('lista-deudores');
   cont.innerHTML = '';
-
-  // Primero pendientes (por días desc), luego pagados
-  const pendientes = DB.filter(p => !pagado(p)).sort((a, b) => dias(b.fecha) - dias(a.fecha));
-  const pagados    = DB.filter(p =>  pagado(p)).sort((a, b) => dias(b.fecha) - dias(a.fecha));
-
+  const pendientes = DB.filter(p=>!pagado(p)).sort((a,b)=>dias(b.fecha)-dias(a.fecha));
+  const pagados    = DB.filter(p=> pagado(p)).sort((a,b)=>dias(b.fecha)-dias(a.fecha));
   if (!DB.length) {
-    cont.innerHTML = `<div class="vacio"><span class="vacio-ico">📋</span><p>Sin registros aún</p><small>Usa "Registrar" para agregar deudores</small></div>`;
+    cont.innerHTML=`<div class="vacio"><span class="vacio-ico">📋</span><p>Sin registros aún</p><small>Usa "Registrar" para agregar deudores</small></div>`;
     return;
   }
-
   if (pendientes.length) {
-    const sep = document.createElement('div');
-    sep.className = 'div-sep';
-    sep.textContent = `Pendientes (${pendientes.length})`;
-    cont.appendChild(sep);
-    pendientes.forEach((p, i) => cont.appendChild(crearItem(p, i, true)));
+    const sep = document.createElement('div'); sep.className='div-sep'; sep.textContent=`Pendientes (${pendientes.length})`; cont.appendChild(sep);
+    pendientes.forEach((p,i) => cont.appendChild(crearItem(p,i,true)));
   }
-
   if (pagados.length) {
-    const sep = document.createElement('div');
-    sep.className = 'div-sep';
-    sep.textContent = `Pagados (${pagados.length})`;
-    cont.appendChild(sep);
-    pagados.forEach((p, i) => cont.appendChild(crearItem(p, i, true)));
+    const sep = document.createElement('div'); sep.className='div-sep'; sep.textContent=`Pagados (${pagados.length})`; cont.appendChild(sep);
+    pagados.forEach((p,i) => cont.appendChild(crearItem(p,i,true)));
   }
 }
 
-/* ════════════════════════
-   MODAL CONFIRMAR (reemplaza confirm() nativo)
-════════════════════════ */
+/* ════════ MODAL CONFIRMAR ════════ */
 function confirmar(titulo, sub, onSi) {
   const modal = document.getElementById('modal-confirm');
   document.getElementById('mc-titulo').textContent = titulo;
   document.getElementById('mc-sub').textContent = sub;
   modal.classList.add('on');
-
   const btnSi = document.getElementById('mc-btn-si');
   const btnNo = document.getElementById('mc-btn-no');
-
-  // Clonar para eliminar listeners viejos
-  const nuevoSi = btnSi.cloneNode(true);
-  const nuevoNo = btnNo.cloneNode(true);
-  btnSi.parentNode.replaceChild(nuevoSi, btnSi);
-  btnNo.parentNode.replaceChild(nuevoNo, btnNo);
-
-  nuevoSi.onclick = () => {
-    modal.classList.remove('on');
-    onSi();
-  };
+  const nuevoSi = btnSi.cloneNode(true); const nuevoNo = btnNo.cloneNode(true);
+  btnSi.parentNode.replaceChild(nuevoSi,btnSi); btnNo.parentNode.replaceChild(nuevoNo,btnNo);
+  nuevoSi.onclick = () => { modal.classList.remove('on'); onSi(); };
   nuevoNo.onclick = () => modal.classList.remove('on');
 }
 
-/* ════════════════════════
-   ELIMINAR DEUDOR
-════════════════════════ */
+/* ════════ ELIMINAR DEUDOR ════════ */
 function eliminarDeudor(codigo) {
-  const p = DB.find(x => x.codigo === codigo);
-  if (!p) { toast('Deudor no encontrado', 'err'); return; }
-  confirmar(
-    `¿Eliminar a ${p.nombre}?`,
-    'Esta acción no se puede deshacer.',
+  const p = DB.find(x=>x.codigo===codigo);
+  if (!p) { toast('Deudor no encontrado','err'); return; }
+  confirmar(`¿Eliminar a ${p.nombre}?`, 'Esta acción no se puede deshacer.',
     async () => {
-      DB = DB.filter(x => x.codigo !== codigo);
-      await guardar();
-      actualizarContador();
-      toast(`🗑️ ${p.nombre} eliminado`, 'err');
-      // Si estaba en perfil, volver a lista
-      if (document.getElementById('pg-perfil').classList.contains('on')) {
-        volverLista();
-      }
-      if (tabActual === 'deudores') renderDeudores();
-      else if (tabActual === 'buscar') {
-        const q = document.getElementById('inp-buscar').value;
-        if (q.trim()) buscar(q);
-      }
+      DB = DB.filter(x=>x.codigo!==codigo);
+      await guardar(); actualizarContador();
+      toast(`🗑️ ${p.nombre} eliminado`,'err');
+      if (document.getElementById('pg-perfil').classList.contains('on')) volverLista();
+      if (tabActual==='deudores') renderDeudores();
+      else if (tabActual==='buscar') { const q=document.getElementById('inp-buscar').value; if(q.trim()) buscar(q); }
     }
   );
 }
 
-/* ════════════════════════
-   PERFIL
-════════════════════════ */
+/* ════════ PERFIL ════════ */
 function abrirPerfil(codigo) {
-  const p = DB.find(x => x.codigo === codigo);
-  if (!p) { toast('Deudor no encontrado', 'err'); return; }
+  const p = DB.find(x=>x.codigo===codigo);
+  if (!p) { toast('Deudor no encontrado','err'); return; }
   pfCodigo = codigo;
 
   const d    = dias(p.fecha);
   const abo  = sumaAbo(p);
   const sal  = saldo(p);
   const esPag = pagado(p);
-  const pct  = Number(p.deuda) > 0 ? Math.min(100, Math.round(abo / Number(p.deuda) * 100)) : 0;
+  const pct  = Number(p.deuda)>0 ? Math.min(100,Math.round(abo/Number(p.deuda)*100)) : 0;
   const u    = urgencia(d, esPag);
 
-  // Cambiar a vista perfil
-  TABS.forEach(t => document.getElementById('pg-' + t).classList.remove('on'));
+  TABS.forEach(t=>document.getElementById('pg-'+t).classList.remove('on'));
   document.getElementById('pg-perfil').classList.add('on');
 
-  // Botón volver en header
+  // Botón volver
   const btnV = document.createElement('button');
-  btnV.className = 'btn-back';
-  btnV.textContent = '← Volver';
-  btnV.onclick = volverLista;
+  btnV.className='btn-back'; btnV.textContent='← Volver'; btnV.onclick=volverLista;
   const htEl = document.getElementById('hdr-title');
-  htEl.innerHTML = '';
-  htEl.appendChild(btnV);
+  htEl.innerHTML=''; htEl.appendChild(btnV);
 
-  // Avatar
   const avEl = document.getElementById('pf-av');
-  avEl.textContent = ini(p.nombre);
-  avEl.style.background = colorAv(p.nombre);
+  avEl.textContent = ini(p.nombre); avEl.style.background = colorAv(p.nombre);
 
-  // Datos
   txt('pf-nombre', p.nombre);
-  document.getElementById('pf-meta').textContent = `📅 ${p.fecha}  ·  ${d} día${d !== 1 ? 's' : ''} desde el préstamo`;
-  txt('pf-pre', fmt(p.deuda));
-  txt('pf-abo', fmt(abo));
-  txt('pf-sal', fmt(sal));
-  txt('pf-pct', pct + '%');
+  // Fecha legible en el meta del perfil
+  document.getElementById('pf-meta').textContent = `📅 ${fechaLegible(p.fecha)}  ·  ${d} día${d!==1?'s':''} desde el préstamo`;
+  txt('pf-pre', fmt(p.deuda)); txt('pf-abo', fmt(abo)); txt('pf-sal', fmt(sal));
+  txt('pf-pct', pct+'%');
 
-  // Barra progreso
   const bar = document.getElementById('pf-bar');
-  bar.style.width = pct + '%';
-  bar.className = 'prog-fill' + (esPag ? ' completo' : '');
+  bar.style.width = pct+'%';
+  bar.className = 'prog-fill'+(esPag?' completo':'');
 
-  // Badge días
   const badge = document.getElementById('pf-badge');
-  badge.textContent = u.t;
-  badge.className = `pf-badge dias-badge ${u.bc}`;
+  badge.textContent=u.t; badge.className=`pf-badge dias-badge ${u.bc}`;
 
-  // Banner pagado
-  document.getElementById('pf-paid-banner').style.display = esPag ? 'flex' : 'none';
+  document.getElementById('pf-paid-banner').style.display = esPag?'flex':'none';
+  document.getElementById('pf-form-abo').style.display    = esPag?'none':'block';
 
-  // Form abono: ocultar si ya pagó
-  document.getElementById('pf-form-abo').style.display = esPag ? 'none' : 'block';
-
-  // Historial
   renderHist(p);
 
-  // Reset form
+  // Cerrar acordeón y pre-cargar datos
+
   document.getElementById('pf-fecha').value = hoy();
   document.getElementById('pf-valor').value = '';
-
-  // Botón eliminar
   document.getElementById('pf-btn-del').onclick = () => eliminarDeudor(codigo);
-
-  // Scroll arriba
   document.getElementById('pg-perfil').querySelector('.scroll').scrollTop = 0;
 }
 
-/* ════════════════════════
-   HISTORIAL EN PERFIL (DOM puro)
-════════════════════════ */
+/* ════════ HISTORIAL ════════ */
 function renderHist(p) {
   const cont = document.getElementById('pf-hist');
   cont.innerHTML = '';
-  if (!p.abonos || !p.abonos.length) {
-    cont.innerHTML = `<div class="hist-empty">Sin abonos registrados aún</div>`;
-    return;
+  if (!p.abonos||!p.abonos.length) {
+    cont.innerHTML=`<div class="hist-empty">Sin abonos registrados aún</div>`; return;
   }
-  // Más reciente primero
-  const rev = [...p.abonos].map((a, i) => ({ ...a, ri: i })).reverse();
-  rev.forEach((a, i) => {
-    const row = document.createElement('div');
-    row.className = 'abo-row';
-
-    const ico = document.createElement('div');
-    ico.className = 'abo-ico'; ico.textContent = '💵';
-
-    const inf = document.createElement('div');
-    inf.className = 'abo-info';
-    const n = document.createElement('div'); n.className = 'abo-num'; n.textContent = `Abono #${p.abonos.length - i}`;
-    const f = document.createElement('div'); f.className = 'abo-date'; f.textContent = a.fecha;
-    inf.append(n, f);
-
-    const val = document.createElement('span');
-    val.className = 'abo-val'; val.textContent = fmt(a.valor);
-
-    const bEdit = document.createElement('button');
-    bEdit.className = 'abo-btn'; bEdit.title = 'Editar'; bEdit.textContent = '✏️';
-    const ri = a.ri;
-    bEdit.onclick = () => abrirEditAbono(ri);
-
-    const bDel = document.createElement('button');
-    bDel.className = 'abo-btn'; bDel.title = 'Eliminar'; bDel.textContent = '🗑️';
-    bDel.onclick = () => eliminarAbono(ri);
-
-    row.append(ico, inf, val, bEdit, bDel);
+  const rev = [...p.abonos].map((a,i)=>({...a,ri:i})).reverse();
+  rev.forEach((a,i) => {
+    const row=document.createElement('div'); row.className='abo-row';
+    const ico=document.createElement('div'); ico.className='abo-ico'; ico.textContent='💵';
+    const inf=document.createElement('div'); inf.className='abo-info';
+    const n=document.createElement('div'); n.className='abo-num'; n.textContent=`Abono #${p.abonos.length-i}`;
+    // Fecha legible en historial de abonos
+    const f=document.createElement('div'); f.className='abo-date'; f.textContent=fechaLegible(a.fecha);
+    inf.append(n,f);
+    const val=document.createElement('span'); val.className='abo-val'; val.textContent=fmt(a.valor);
+    const bEdit=document.createElement('button'); bEdit.className='abo-btn'; bEdit.title='Editar'; bEdit.textContent='✏️';
+    const ri=a.ri; bEdit.onclick=()=>abrirEditAbono(ri);
+    const bDel=document.createElement('button'); bDel.className='abo-btn'; bDel.title='Eliminar'; bDel.textContent='🗑️';
+    bDel.onclick=()=>eliminarAbono(ri);
+    row.append(ico,inf,val,bEdit,bDel);
     cont.appendChild(row);
   });
 }
 
-/* ════════════════════════
-   ABONAR
-════════════════════════ */
+/* ════════ ABONAR ════════ */
 async function abonarPerfil() {
-  const p = DB.find(x => x.codigo === pfCodigo);
-  if (!p) return;
-  const fecha = document.getElementById('pf-fecha').value || hoy();
+  const p = DB.find(x=>x.codigo===pfCodigo); if(!p) return;
+  const fecha = document.getElementById('pf-fecha').value||hoy();
   const valor = parseFloat(document.getElementById('pf-valor').value);
-  if (!valor || valor <= 0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
-  p.abonos.push({ fecha, valor });
-  await guardar();
-  actualizarContador();
-  if (pagado(p)) {
-    toast(`🎉 ¡${p.nombre} está paz y salvo!`, 'ok');
-    setTimeout(() => abrirPerfil(pfCodigo), 600);
-  } else {
-    toast('✅ Abono registrado', 'ok');
+  if (!valor||valor<=0) { toast('⚠️ Ingresa un valor válido','warn'); return; }
+  p.abonos.push({fecha,valor});
+  await guardar(); actualizarContador();
+  if (pagado(p)) { toast(`🎉 ¡${p.nombre} está paz y salvo!`,'ok'); setTimeout(()=>abrirPerfil(pfCodigo),600); }
+  else { toast('✅ Abono registrado','ok'); abrirPerfil(pfCodigo); }
+}
+
+/* ════════ EDICIÓN INLINE — NOMBRE ════════ */
+function editarNombre() {
+  const p = DB.find(x => x.codigo === pfCodigo); if (!p) return;
+  const el = document.getElementById('pf-nombre');
+  if (el.querySelector('input')) return;
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'pf-nombre-input';
+  inp.value = p.nombre; inp.autocomplete = 'off';
+  el.textContent = ''; el.appendChild(inp);
+  inp.focus(); inp.select();
+  inp.onblur = async () => {
+    const n = inp.value.trim();
+    if (n && n !== p.nombre) { p.nombre = n; await guardar(); toast('✅ Nombre actualizado','ok'); }
     abrirPerfil(pfCodigo);
-  }
+  };
+  inp.onkeydown = (e) => { if (e.key==='Enter') inp.blur(); if (e.key==='Escape') abrirPerfil(pfCodigo); };
 }
 
-/* ════════════════════════
-   EDITAR / ELIMINAR ABONO
-════════════════════════ */
-function abrirEditAbono(idx) {
-  const p = DB.find(x => x.codigo === pfCodigo);
-  if (!p || !p.abonos[idx]) return;
-  editIdx = idx;
-  document.getElementById('m-fecha').value = p.abonos[idx].fecha;
-  document.getElementById('m-valor').value = p.abonos[idx].valor;
-  document.getElementById('modal-abo').classList.add('on');
+/* ════════ EDICIÓN INLINE — DEUDA ════════ */
+function editarDeuda() {
+  const p = DB.find(x => x.codigo === pfCodigo); if (!p) return;
+  document.getElementById('md-valor').value = p.deuda;
+  document.getElementById('modal-deuda').classList.add('on');
+  setTimeout(() => document.getElementById('md-valor').focus(), 300);
 }
-
-async function guardarAbono() {
-  const p = DB.find(x => x.codigo === pfCodigo);
-  if (!p || editIdx === null) return;
-  const fecha = document.getElementById('m-fecha').value || hoy();
-  const valor = parseFloat(document.getElementById('m-valor').value);
-  if (!valor || valor <= 0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
-  p.abonos[editIdx] = { fecha, valor };
-  await guardar();
-  actualizarContador();
-  cerrarModal();
-  toast('✅ Abono actualizado', 'ok');
+async function guardarDeuda() {
+  const p = DB.find(x => x.codigo === pfCodigo); if (!p) return;
+  const val = parseFloat(document.getElementById('md-valor').value);
+  if (!val || val <= 0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
+  p.deuda = val;
+  await guardar(); actualizarContador();
+  cerrarModalDeuda();
+  toast('✅ Valor actualizado', 'ok');
   abrirPerfil(pfCodigo);
 }
+function cerrarModalDeuda(e) {
+  if (!e || e.target === document.getElementById('modal-deuda'))
+    document.getElementById('modal-deuda').classList.remove('on');
+}
 
+/* ════════ EDITAR DATOS DEUDOR (legacy — ya no se usa) ════════ */
+async function guardarEdicionDeudor() {}
+
+/* ════════ EDITAR / ELIMINAR ABONO ════════ */
+function abrirEditAbono(idx) {
+  const p = DB.find(x=>x.codigo===pfCodigo); if(!p||!p.abonos[idx]) return;
+  editIdx=idx;
+  document.getElementById('m-fecha').value=p.abonos[idx].fecha;
+  document.getElementById('m-valor').value=p.abonos[idx].valor;
+  document.getElementById('modal-abo').classList.add('on');
+}
+async function guardarAbono() {
+  const p = DB.find(x=>x.codigo===pfCodigo); if(!p||editIdx===null) return;
+  const fecha=document.getElementById('m-fecha').value||hoy();
+  const valor=parseFloat(document.getElementById('m-valor').value);
+  if(!valor||valor<=0){toast('⚠️ Ingresa un valor válido','warn');return;}
+  p.abonos[editIdx]={fecha,valor};
+  await guardar(); actualizarContador();
+  cerrarModalAbo(); toast('✅ Abono actualizado','ok'); abrirPerfil(pfCodigo);
+}
 function eliminarAbono(idx) {
-  confirmar(
-    '¿Eliminar este abono?',
-    'No se puede recuperar después.',
+  confirmar('¿Eliminar este abono?','No se puede recuperar después.',
     async () => {
-      const p = DB.find(x => x.codigo === pfCodigo);
-      if (!p) return;
-      p.abonos.splice(idx, 1);
-      await guardar();
-      actualizarContador();
-      toast('🗑️ Abono eliminado', 'err');
-      abrirPerfil(pfCodigo);
+      const p=DB.find(x=>x.codigo===pfCodigo); if(!p) return;
+      p.abonos.splice(idx,1);
+      await guardar(); actualizarContador();
+      toast('🗑️ Abono eliminado','err'); abrirPerfil(pfCodigo);
     }
   );
 }
-
-function cerrarModal(e) {
-  if (!e || e.target === document.getElementById('modal-abo')) {
-    document.getElementById('modal-abo').classList.remove('on');
-    editIdx = null;
+function cerrarModalAbo(e) {
+  if (!e||e.target===document.getElementById('modal-abo')) {
+    document.getElementById('modal-abo').classList.remove('on'); editIdx=null;
   }
 }
 
-/* ════════════════════════
-   REGISTRAR PRÉSTAMO
-════════════════════════ */
+/* ════════ REGISTRAR ════════ */
 async function registrar() {
   const fecha  = document.getElementById('r-fecha').value;
   const nombre = document.getElementById('r-nombre').value.trim();
   const valor  = parseFloat(document.getElementById('r-valor').value);
-
-  if (!fecha)             { toast('⚠️ Ingresa la fecha', 'warn');        return; }
-  if (!nombre)            { toast('⚠️ Ingresa el nombre', 'warn');       return; }
-  if (!valor || valor<=0) { toast('⚠️ Ingresa un valor válido', 'warn'); return; }
-
+  if (!fecha)           {toast('⚠️ Ingresa la fecha','warn');return;}
+  if (!nombre)          {toast('⚠️ Ingresa el nombre','warn');return;}
+  if (!valor||valor<=0) {toast('⚠️ Ingresa un valor válido','warn');return;}
   const codigo = codigoNuevo(nombre);
-  DB.push({ fecha, nombre, codigo, deuda: valor, abonos: [] });
-  await guardar();
-  actualizarContador();
-
-  // Limpiar campos
-  document.getElementById('r-nombre').value = '';
-  document.getElementById('r-valor').value  = '';
-  document.getElementById('r-fecha').value  = hoy();
-
-  toast(`✅ ${nombre} registrado`, 'ok');
+  DB.push({fecha,nombre,codigo,deuda:valor,abonos:[]});
+  await guardar(); actualizarContador();
+  document.getElementById('r-nombre').value='';
+  document.getElementById('r-valor').value='';
+  document.getElementById('r-fecha').value=hoy();
+  toast(`✅ ${nombre} registrado`,'ok');
 }
 
-/* ════════════════════════
-   ARRANQUE
-════════════════════════ */
+/* ════════ ARRANQUE ════════ */
 init();
 </script>
 </body>
