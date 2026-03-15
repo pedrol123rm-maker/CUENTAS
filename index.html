@@ -70,14 +70,12 @@ button{cursor:pointer;border:none;background:none}
 .hdr-n{font-size:22px;font-weight:900;color:#fff;line-height:1}
 .hdr-nlbl{font-size:8px;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.5px}
 
-/* ══ PÁGINAS — clave del fix de scroll ══ */
+/* ══ PÁGINAS ══ */
 .page{display:none;flex:1;flex-direction:column;animation:fadeUp .2s ease;
-  min-height:0; /* CRÍTICO: permite que el flex hijo haga scroll */}
+  min-height:0;}
 .page.on{display:flex}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* Contenedor principal: header + páginas + nav */
-body > header{ flex-shrink:0 }
 #app-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0}
 
 .scroll{
@@ -122,7 +120,8 @@ body > header{ flex-shrink:0 }
 /* ══ BUSCAR ══ */
 .inp-buscar{width:100%;background:var(--card);border:1.5px solid var(--borde);
   border-radius:13px;padding:13px 16px;font-size:16px;color:var(--txt);
-  outline:none;box-shadow:var(--s1);transition:border-color .2s,box-shadow .2s}
+  outline:none;box-shadow:var(--s1);transition:border-color .2s,box-shadow .2s;
+  -webkit-appearance:none; appearance:none;}
 .inp-buscar:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(58,159,212,.13)}
 .inp-buscar::placeholder{color:var(--txt2)}
 
@@ -217,9 +216,14 @@ body > header{ flex-shrink:0 }
 .btn-back:active{background:rgba(255,255,255,.24)}
 
 /* ══ EDICIÓN INLINE ══ */
-.pf-nombre{cursor:pointer;border-bottom:1.5px dashed rgba(255,255,255,.35);padding-bottom:2px;
-  transition:border-color .2s}
-.pf-nombre:active{border-color:rgba(255,255,255,.8)}
+/* FIX: el nombre en perfil ahora usa un botón dedicado en vez de onclick en el div */
+.pf-nombre-wrap{display:flex;align-items:center;gap:6px;min-width:0;flex:1}
+.pf-nombre{font-size:18px;font-weight:900;color:#fff;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;flex:1;min-width:0}
+.btn-edit-nombre{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.28);
+  border-radius:8px;padding:5px 9px;color:#fff;font-size:13px;flex-shrink:0;
+  transition:background .15s}
+.btn-edit-nombre:active{background:rgba(255,255,255,.36)}
 .pf-nombre-input{background:transparent;border:none;border-bottom:2px solid rgba(255,255,255,.9);
   color:#fff;font-size:18px;font-weight:900;width:100%;outline:none;
   font-family:inherit;padding-bottom:2px;letter-spacing:-.3px}
@@ -275,25 +279,6 @@ body > header{ flex-shrink:0 }
   justify-content:center;gap:6px;cursor:pointer;transition:transform .1s}
 .btn-import:active{transform:scale(.96)}
 .backup-ultima{font-size:10px;color:#64748b;margin-top:10px;text-align:center}
-
-/* Alerta respaldo */
-#alerta-respaldo{position:fixed;top:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:480px;z-index:8000;padding:0 12px;
-  padding-top:max(env(safe-area-inset-top),64px);pointer-events:none;transition:opacity .3s}
-#alerta-respaldo.hidden{opacity:0}
-.ar-box{background:linear-gradient(135deg,#7c3a00,#c05800);border-radius:14px;
-  padding:13px 15px;display:flex;align-items:center;gap:11px;
-  box-shadow:0 6px 24px rgba(192,88,0,.4);pointer-events:all;
-  animation:bajarAlerta .4s cubic-bezier(.34,1.4,.64,1)}
-@keyframes bajarAlerta{from{transform:translateY(-30px);opacity:0}to{transform:translateY(0);opacity:1}}
-.ar-ico{font-size:26px;flex-shrink:0}
-.ar-info{flex:1;min-width:0}
-.ar-titulo{font-size:13px;font-weight:900;color:#fff}
-.ar-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:2px}
-.ar-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:10px;
-  padding:8px 13px;color:#fff;font-size:12px;font-weight:800;white-space:nowrap;flex-shrink:0}
-.ar-btn:active{background:rgba(255,255,255,.35)}
-.ar-cerrar{background:none;border:none;color:rgba(255,255,255,.5);font-size:18px;padding:2px 4px;flex-shrink:0}
 
 /* ══ NAV ══ */
 #nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);
@@ -373,19 +358,6 @@ body > header{ flex-shrink:0 }
   <div class="lk-err" id="lk-err">Clave incorrecta</div>
 </div>
 
-<!-- ALERTA RESPALDO -->
-<div id="alerta-respaldo" class="hidden">
-  <div class="ar-box">
-    <span class="ar-ico">⚠️</span>
-    <div class="ar-info">
-      <div class="ar-titulo">¡Haz tu respaldo!</div>
-      <div class="ar-sub" id="ar-sub-txt">Llevas varios días sin exportar tus datos</div>
-    </div>
-    <button class="ar-btn" onclick="exportarDatos()">💾 Exportar</button>
-    <button class="ar-cerrar" onclick="cerrarAlertaRespaldo()">✕</button>
-  </div>
-</div>
-
 <!-- ══════════ HEADER ══════════ -->
 <header id="hdr">
   <div class="hdr-l">
@@ -398,15 +370,15 @@ body > header{ flex-shrink:0 }
   </div>
 </header>
 
-<!-- Wrapper principal para que el scroll funcione correctamente -->
 <div id="app-wrap">
 
 <!-- ══════════ TAB: BUSCAR ══════════ -->
 <div class="page on" id="pg-buscar">
   <div class="scroll">
-    <input class="inp-buscar" id="inp-buscar" type="search"
+    <!-- FIX BÚSQUEDA: removidos atributos oninput/inline, el listener se agrega en JS con múltiples eventos para compatibilidad iOS -->
+    <input class="inp-buscar" id="inp-buscar" type="text"
       placeholder="🔍  Buscar por nombre..."
-      autocomplete="off" oninput="buscar(this.value)">
+      autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <div id="res-buscar">
       <div class="vacio">
         <span class="vacio-ico">🔍</span>
@@ -425,7 +397,11 @@ body > header{ flex-shrink:0 }
       <div class="pf-top">
         <div class="pf-av" id="pf-av"></div>
         <div class="pf-info">
-          <div class="pf-nombre" id="pf-nombre" onclick="editarNombre()" title="Toca para editar">—</div>
+          <!-- FIX EDITAR NOMBRE: botón separado en vez de onclick en el div de texto -->
+          <div class="pf-nombre-wrap">
+            <div class="pf-nombre" id="pf-nombre">—</div>
+            <button class="btn-edit-nombre" id="btn-edit-nombre" onclick="editarNombre()" title="Editar nombre">✏️</button>
+          </div>
           <div class="pf-meta" id="pf-meta">—</div>
         </div>
         <span class="pf-badge dias-badge" id="pf-badge">—</span>
@@ -462,7 +438,6 @@ body > header{ flex-shrink:0 }
       <div id="pf-hist"></div>
     </div>
 
-    <!-- FORM ABONO -->
     <div class="form-abo" id="pf-form-abo">
       <div class="form-abo-title">💵 Registrar abono</div>
       <div class="campo"><label>Fecha del abono</label><input type="date" id="pf-fecha" class="gn"></div>
@@ -599,6 +574,8 @@ const PASS = '2611';
 const KEYS = ['cuentas_v10','cuentas_v9','cuentas_v8','cuentas_pendientes_v7','cuentas_pendientes_v6','cuentas_pendientes_v5'];
 const KEY  = 'cuentas_v10';
 const KEY_BACKUP = 'cuentas_ultimo_backup';
+// FIX ALERTA: umbral subido a 7 días para no molestar tanto
+const DIAS_ALERTA_BACKUP = 7;
 const TABS = ['buscar','registrar','deudores','resumen'];
 
 /* ── Estado ── */
@@ -630,6 +607,7 @@ function lkCheck() {
     document.getElementById('lock').classList.add('fuera');
     setTimeout(() => {
       document.getElementById('lock').style.display = 'none';
+      // FIX ALERTA: solo muestra si hay datos Y han pasado suficientes días
       verificarAlertaRespaldo();
     }, 450);
   } else {
@@ -671,13 +649,20 @@ async function init() {
   document.getElementById('r-fecha').value  = hoy();
   document.getElementById('pf-fecha').value = hoy();
   actualizarContador();
+
+  // FIX BÚSQUEDA: registrar eventos con addEventListener para máxima compatibilidad en iOS
+  const inputBuscar = document.getElementById('inp-buscar');
+  ['input', 'keyup', 'change', 'compositionend'].forEach(evt => {
+    inputBuscar.addEventListener(evt, () => buscar(inputBuscar.value));
+  });
+  // En iOS el evento 'search' al limpiar con X tampoco dispara input, este cubre ese caso
+  inputBuscar.addEventListener('search', () => buscar(inputBuscar.value));
 }
 
 /* ════════ UTILS ════════ */
 function hoy()  { return new Date().toISOString().split('T')[0]; }
 function fmt(n) { return '$' + Number(n).toLocaleString('es-CO'); }
 
-// Fecha legible: "2025-02-25" → "Feb 25" / "Mar 8"
 function fechaLegible(f) {
   if (!f) return '—';
   let s = String(f).trim();
@@ -736,21 +721,21 @@ function toast(msg, tipo='ok') {
   toastT = setTimeout(() => el.classList.remove('on'), 2600);
 }
 
-/* ════════ ALERTA RESPALDO ════════ */
+/* ════════ ALERTA RESPALDO — FIX: umbral más alto, no molesta tanto ════════ */
 function verificarAlertaRespaldo() {
+  // Solo mostrar si hay datos
   if (!DB.length) return;
   const ultimo = localStorage.getItem(KEY_BACKUP);
-  if (!ultimo) { mostrarAlertaRespaldo('¡Nunca has exportado tus datos!'); return; }
+  // FIX: si nunca se ha exportado, solo avisar si hay más de 5 registros
+  if (!ultimo) {
+    if (DB.length >= 5) toast('💾 Recuerda exportar tu respaldo en Resumen', 'warn');
+    return;
+  }
   const d = dias(ultimo);
-  if (d >= 3) mostrarAlertaRespaldo(`Llevas ${d} días sin exportar tus datos`);
-}
-function mostrarAlertaRespaldo(msg) {
-  document.getElementById('ar-sub-txt').textContent = msg;
-  document.getElementById('alerta-respaldo').classList.remove('hidden');
-  setTimeout(() => cerrarAlertaRespaldo(), 8000);
-}
-function cerrarAlertaRespaldo() {
-  document.getElementById('alerta-respaldo').classList.add('hidden');
+  // FIX: solo alerta si han pasado 7+ días (antes era 3)
+  if (d >= DIAS_ALERTA_BACKUP) {
+    toast(`💾 Llevas ${d} días sin hacer respaldo`, 'warn');
+  }
 }
 
 /* ════════ EXPORTAR ════════ */
@@ -765,7 +750,6 @@ function exportarDatos() {
   document.body.removeChild(a); URL.revokeObjectURL(url);
   localStorage.setItem(KEY_BACKUP, hoy());
   actualizarLblBackup();
-  cerrarAlertaRespaldo();
   toast('✅ Respaldo exportado correctamente','ok');
 }
 
@@ -812,7 +796,7 @@ function actualizarLblBackup() {
   } else {
     const d = dias(ultimo);
     if (d === 0) { el.textContent = '✅ Último respaldo: hoy'; el.style.color = '#0e7c45'; el.style.fontWeight = '700'; }
-    else { el.textContent = `🕐 Último respaldo: hace ${d} día${d>1?'s':''}`; el.style.color = d>=3?'#c05800':'#64748b'; el.style.fontWeight = d>=3?'700':'600'; }
+    else { el.textContent = `🕐 Último respaldo: hace ${d} día${d>1?'s':''}`; el.style.color = d>=7?'#c05800':'#64748b'; el.style.fontWeight = d>=7?'700':'600'; }
   }
 }
 
@@ -897,7 +881,7 @@ function renderSemanas() {
   }).join('');
 }
 
-/* ════════ ITEM DEUDOR (DOM puro) ════════ */
+/* ════════ ITEM DEUDOR ════════ */
 function crearItem(p, i, conDel) {
   const d   = dias(p.fecha);
   const sal = saldo(p);
@@ -924,7 +908,6 @@ function crearItem(p, i, conDel) {
 
   const meta = document.createElement('div');
   meta.className = 'ditem-meta';
-  // Fecha legible + días
   meta.textContent = `📅 ${fechaLegible(p.fecha)}  ·  ${d} día${d!==1?'s':''}`;
 
   const salDiv = document.createElement('div');
@@ -952,11 +935,17 @@ function crearItem(p, i, conDel) {
 /* ════════ BUSCAR ════════ */
 function buscar(q) {
   const cont = document.getElementById('res-buscar');
-  q = q.trim().toLowerCase();
-  if (!q) { cont.innerHTML=`<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe el nombre del deudor</p><small>Muestra todos — pendientes y pagados</small></div>`; return; }
+  q = (q || '').trim().toLowerCase();
+  if (!q) {
+    cont.innerHTML=`<div class="vacio"><span class="vacio-ico">🔍</span><p>Escribe el nombre del deudor</p><small>Muestra todos — pendientes y pagados</small></div>`;
+    return;
+  }
   const res = DB.filter(p => p.nombre.toLowerCase().includes(q));
   cont.innerHTML = '';
-  if (!res.length) { cont.innerHTML=`<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${q}</strong>"</p></div>`; return; }
+  if (!res.length) {
+    cont.innerHTML=`<div class="vacio"><span class="vacio-ico">😕</span><p>Sin resultados para "<strong>${q}</strong>"</p></div>`;
+    return;
+  }
   res.forEach((p,i) => cont.appendChild(crearItem(p,i,false)));
 }
 
@@ -1026,7 +1015,6 @@ function abrirPerfil(codigo) {
   TABS.forEach(t=>document.getElementById('pg-'+t).classList.remove('on'));
   document.getElementById('pg-perfil').classList.add('on');
 
-  // Botón volver
   const btnV = document.createElement('button');
   btnV.className='btn-back'; btnV.textContent='← Volver'; btnV.onclick=volverLista;
   const htEl = document.getElementById('hdr-title');
@@ -1035,8 +1023,12 @@ function abrirPerfil(codigo) {
   const avEl = document.getElementById('pf-av');
   avEl.textContent = ini(p.nombre); avEl.style.background = colorAv(p.nombre);
 
-  txt('pf-nombre', p.nombre);
-  // Fecha legible en el meta del perfil
+  // FIX EDITAR NOMBRE: actualizar el div de texto sin destruir el botón ✏️
+  const nombreEl = document.getElementById('pf-nombre');
+  // Limpiar cualquier input que haya quedado abierto
+  nombreEl.innerHTML = '';
+  nombreEl.textContent = p.nombre;
+
   document.getElementById('pf-meta').textContent = `📅 ${fechaLegible(p.fecha)}  ·  ${d} día${d!==1?'s':''} desde el préstamo`;
   txt('pf-pre', fmt(p.deuda)); txt('pf-abo', fmt(abo)); txt('pf-sal', fmt(sal));
   txt('pf-pct', pct+'%');
@@ -1052,8 +1044,6 @@ function abrirPerfil(codigo) {
   document.getElementById('pf-form-abo').style.display    = esPag?'none':'block';
 
   renderHist(p);
-
-  // Cerrar acordeón y pre-cargar datos
 
   document.getElementById('pf-fecha').value = hoy();
   document.getElementById('pf-valor').value = '';
@@ -1074,7 +1064,6 @@ function renderHist(p) {
     const ico=document.createElement('div'); ico.className='abo-ico'; ico.textContent='💵';
     const inf=document.createElement('div'); inf.className='abo-info';
     const n=document.createElement('div'); n.className='abo-num'; n.textContent=`Abono #${p.abonos.length-i}`;
-    // Fecha legible en historial de abonos
     const f=document.createElement('div'); f.className='abo-date'; f.textContent=fechaLegible(a.fecha);
     inf.append(n,f);
     const val=document.createElement('span'); val.className='abo-val'; val.textContent=fmt(a.valor);
@@ -1099,22 +1088,57 @@ async function abonarPerfil() {
   else { toast('✅ Abono registrado','ok'); abrirPerfil(pfCodigo); }
 }
 
-/* ════════ EDICIÓN INLINE — NOMBRE ════════ */
+/* ════════ FIX EDITAR NOMBRE ════════
+   La lógica ahora reemplaza el div de nombre con un input,
+   y al confirmar solo actualiza el texto sin llamar abrirPerfil()
+   (que sobreescribía el DOM antes de guardar).
+════════ */
 function editarNombre() {
   const p = DB.find(x => x.codigo === pfCodigo); if (!p) return;
-  const el = document.getElementById('pf-nombre');
-  if (el.querySelector('input')) return;
+  const nombreEl = document.getElementById('pf-nombre');
+  const btnEdit  = document.getElementById('btn-edit-nombre');
+
+  // Evitar abrir doble
+  if (nombreEl.querySelector('input')) return;
+
+  // Ocultar botón editar mientras se escribe
+  btnEdit.style.display = 'none';
+
+  // Crear input en su lugar
   const inp = document.createElement('input');
-  inp.type = 'text'; inp.className = 'pf-nombre-input';
-  inp.value = p.nombre; inp.autocomplete = 'off';
-  el.textContent = ''; el.appendChild(inp);
-  inp.focus(); inp.select();
-  inp.onblur = async () => {
-    const n = inp.value.trim();
-    if (n && n !== p.nombre) { p.nombre = n; await guardar(); toast('✅ Nombre actualizado','ok'); }
-    abrirPerfil(pfCodigo);
-  };
-  inp.onkeydown = (e) => { if (e.key==='Enter') inp.blur(); if (e.key==='Escape') abrirPerfil(pfCodigo); };
+  inp.type = 'text';
+  inp.className = 'pf-nombre-input';
+  inp.value = p.nombre;
+  inp.autocomplete = 'off';
+  inp.maxLength = 60;
+
+  nombreEl.textContent = '';
+  nombreEl.appendChild(inp);
+
+  // Pequeño delay para que el teclado abra bien en iOS
+  setTimeout(() => { inp.focus(); inp.select(); }, 80);
+
+  async function confirmarEdicion() {
+    const nuevoNombre = inp.value.trim();
+    btnEdit.style.display = '';
+    if (nuevoNombre && nuevoNombre !== p.nombre) {
+      p.nombre = nuevoNombre;
+      await guardar();
+      // Actualizar avatar con nuevas iniciales
+      const avEl = document.getElementById('pf-av');
+      avEl.textContent = ini(p.nombre);
+      avEl.style.background = colorAv(p.nombre);
+      toast('✅ Nombre actualizado', 'ok');
+    }
+    // Restaurar el texto sin recargar todo el perfil
+    nombreEl.textContent = p.nombre;
+  }
+
+  inp.addEventListener('blur', confirmarEdicion);
+  inp.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter')  { e.preventDefault(); inp.blur(); }
+    if (e.key === 'Escape') { inp.value = p.nombre; inp.blur(); }
+  });
 }
 
 /* ════════ EDICIÓN INLINE — DEUDA ════════ */
@@ -1138,9 +1162,6 @@ function cerrarModalDeuda(e) {
   if (!e || e.target === document.getElementById('modal-deuda'))
     document.getElementById('modal-deuda').classList.remove('on');
 }
-
-/* ════════ EDITAR DATOS DEUDOR (legacy — ya no se usa) ════════ */
-async function guardarEdicionDeudor() {}
 
 /* ════════ EDITAR / ELIMINAR ABONO ════════ */
 function abrirEditAbono(idx) {
